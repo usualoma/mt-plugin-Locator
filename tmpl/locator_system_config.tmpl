@@ -1,0 +1,84 @@
+<mtapp:setting
+	id="locator_field"
+	label="<__trans phrase="location-field address">"
+>
+
+<ul>
+<li>
+<input type="radio" name="field_address" value="0" <MTIf tag="LocationFieldAddress" eq="0">checked="checked"</MTIf> /> <MT_TRANS phrase="location-field not to use">
+</li>
+
+<li>
+<input type="radio" name="field_address" value="1" <MTIf tag="LocationFieldAddress" eq="1">checked="checked"</MTIf> /> <MT_TRANS phrase="location-field use">
+</li>
+
+<li>
+<input type="radio" name="field_address" value="2" <MTIf tag="LocationFieldAddress" eq="2">checked="checked"</MTIf> /> <MT_TRANS phrase="location-field required">
+</li>
+
+</ul>
+
+</mtapp:setting>
+
+<mtapp:setting
+	id="locator_field"
+	label="<__trans phrase="location-field map">"
+>
+
+<ul>
+<li>
+<input type="radio" name="field_map" value="0" <MTIf tag="LocationFieldMap" eq="0">checked="checked"</MTIf> /> <MT_TRANS phrase="location-field not to use">
+</li>
+
+<li>
+<input type="radio" name="field_map" value="1" <MTIf tag="LocationFieldMap" eq="1">checked="checked"</MTIf> /> <MT_TRANS phrase="location-field use">
+</li>
+
+<li>
+<input type="radio" name="field_map" value="2" <MTIf tag="LocationFieldMap" eq="2">checked="checked"</MTIf> /> <MT_TRANS phrase="location-field required">
+</li>
+
+</ul>
+
+</mtapp:setting>
+
+<mtapp:setting
+	id="locator_enable"
+	label="<__trans phrase="Which context enable location-field for">"
+>
+
+<ul>
+<li>
+<input type="checkbox" name="enable_for_author" id="enable_for_author" value="1" <MTIfNonZero tag="LocationEnableForAuthor">checked="checked"</MTIfNonZero> /> <MT_TRANS phrase="for author">
+</li>
+
+<li>
+<input type="checkbox" name="enable_for_blog" id="enable_for_blog" value="1" <MTIfNonZero tag="LocationEnableForBlog">checked="checked"</MTIfNonZero> /> <MT_TRANS phrase="for blog">
+</li>
+
+<li>
+<input type="checkbox" name="enable_for_entry" id="enable_for_entry" value="1" <MTIfNonZero tag="LocationEnableForEntry">checked="checked"</MTIfNonZero> onclick="toggleAdvancedPrefs(event, 'enable_for_entry');" /> <MT_TRANS phrase="for entry">
+</li>
+
+</ul>
+
+</mtapp:setting>
+
+<div id="enable_for_entry-advanced" class="setting-advanced" style="display: <TMPL_IF NAME=ENABLE_FOR_ENTRY>block<TMPL_ELSE>none</TMPL_IF>;">
+<mtapp:setting
+	id="blogs"
+	label="<__trans phrase="Which blogs">"
+>
+<MTBlogs ids="all">
+<input type="checkbox" value="1" name="enable_for_entry_<MTBlogID/>" <MTIfNonZero tag="LocationEnableForEntry">checked="checked"</MTIfNonZero>/><MTBlogName/><br/>
+</MTBlogs>
+</mtapp:setting>
+</div>
+
+
+<mtapp:setting
+	id="apikey"
+	label="<__trans phrase="API Key">"
+>
+<input name="googlemap_api_key" <TMPL_IF NAME=GOOGLEMAP_API_KEY>value="<TMPL_VAR NAME=GOOGLEMAP_API_KEY ESCAPE=HTML>"</TMPL_IF>/>
+</mtapp:setting>
