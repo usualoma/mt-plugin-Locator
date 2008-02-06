@@ -89,35 +89,72 @@ MT->add_plugin($plugin = __PACKAGE__->new({
 	l10n_class  => 'Locator::L10N',
 }));
 
-&{sub{
-	my ($hash) = @_;
-	foreach my $key (keys(%$hash)) {
-		MT::Template::Context->add_tag(
-			$key => sub { runner($hash->{$key}, 'template', @_); }
-		);
+BEGIN {
+	our $template_tags = {
+		'LocatorFieldAddress' => '_hdlr_locator_field',
+		'LocatorFieldMap' => '_hdlr_locator_field',
+		'LocatorFieldZoom' => '_hdlr_locator_field',
+
+		'LocatorEnableForAuthor' => '_hdlr_locator_enable_for',
+		'LocatorEnableForBlog' => '_hdlr_locator_enable_for',
+		'LocatorEnableForEntry' => '_hdlr_locator_enable_for',
+
+		'GoogleMapAPIKey' => '_hdlr_googlemap_api_key',
+
+		'LocatorGoogleMapMobile' => '_hdlr_locator_google_map_mobile',
+
+		'LocatorLatitude' => '_hdlr_locator_latitude_g',
+		'LocatorLongitude' => '_hdlr_locator_longitude_g',
+		'LocatorZoom' => '_hdlr_locator_zoom_g',
+	};
+	our $template_container_tags = {
+		'LocatorGoogleMap' => '_hdlr_locator_google_map',
+	};
+}
+
+sub init_registry { 
+	my $plugin = shift;
+	my $hash = {
+		tags => {
+			help_url => 'http://tec.toi-planning.net/mt/locator/tags#%t',
+			function => {},
+			block => {},
+		}
+	};
+
+	foreach my $key (keys(%$template_tags)) {
+		$hash->{tags}->{function}->{$key} = sub {
+			runner($template_tags->{$key}, 'template', @_);
+		};
 	}
-}}({
-	'LocatorFieldAddress' => '_hdlr_locator_field',
-	'LocatorFieldMap' => '_hdlr_locator_field',
-	'LocatorFieldZoom' => '_hdlr_locator_field',
 
-	'LocatorEnableForAuthor' => '_hdlr_locator_enable_for',
-	'LocatorEnableForBlog' => '_hdlr_locator_enable_for',
-	'LocatorEnableForEntry' => '_hdlr_locator_enable_for',
+	foreach my $key (keys(%$template_container_tags)) {
+		$hash->{tags}->{block}->{$key} = sub {
+			runner($template_container_tags->{$key}, 'template', @_);
+		};
+	}
+	$plugin->registry($hash);
+}
 
-	'GoogleMapAPIKey' => '_hdlr_googlemap_api_key',
+if (MT->version_number < 4 ) {
+	&{sub{
+		my ($hash) = @_;
+		foreach my $key (keys(%$hash)) {
+			MT::Template::Context->add_tag(
+				$key => sub { runner($hash->{$key}, 'template', @_); }
+			);
+		}
+	}}($template_tags);
 
-	'LocatorGoogleMapMobile' => '_hdlr_locator_google_map_mobile',
-
-	'LocatorLatitude' => '_hdlr_locator_latitude_g',
-	'LocatorLongitude' => '_hdlr_locator_longitude_g',
-	'LocatorZoom' => '_hdlr_locator_zoom_g',
-});
-
-MT::Template::Context->add_container_tag(
-	'LocatorGoogleMap' =>
-	sub { runner('_hdlr_locator_google_map', 'template', @_); }
-);
+	&{sub{
+		my ($hash) = @_;
+		foreach my $key (keys(%$hash)) {
+			MT::Template::Context->add_container_tag(
+				$key => sub { runner($hash->{$key}, 'template', @_); }
+			);
+		}
+	}}($template_container_tags);
+}
 
 # Allows external access to plugin object: MT::Plugin::Locator->instance
 sub instance { $plugin; }
