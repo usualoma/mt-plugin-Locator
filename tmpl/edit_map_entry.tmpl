@@ -1,7 +1,7 @@
 <input type="hidden" name="locator_beacon" value="1"/>
 <fieldset>
-<h3><MT_TRANS phrase="Map"></h3>	
 
+<MTIfNonZero tag="LocatorFieldAddress">
 <mtapp:setting
 	id="location_address"
 	label="<__trans phrase="Address">"
@@ -11,7 +11,9 @@
 	<input name="location_address" id="location_address" class="full-width" value="<mt:var name="location_address" escape="html">" onchange="updateSearchFormField();"/>
 	</div>
 </mtapp:setting>
+</MTIfNonZero>
 
+<MTIfNonZero tag="LocatorFieldMap">
 <mtapp:setting
 	id="location_map"
 	label="<__trans phrase="Map">"
@@ -290,5 +292,6 @@ if (GBrowserIsCompatible()) {
 //]]>
 </script>
 </mtapp:setting>
+</MTIfNonZero>
 
 </fieldset>
