@@ -211,19 +211,39 @@ sub delete_customfields {
 sub pre_save{
 	my ($plugin, $cb, $obj, $original) = @_;
 	my $app = MT->instance;
+	my $datasource = $obj->datasource;
+
+	my $blog_id = $app->param('blog_id');
+	my $scope = $blog_id ? ('blog:' . $blog_id) : 'system';
+	if ($datasource ne 'entry') {
+		$scope = undef;
+	}
+
+	my $enabled = $plugin->get_config_value(
+		'enable_for_' . $datasource, $scope
+	);
+	if (! $enabled) {
+		return;
+	}
 	
 	return if !($app->can('param')); # God knows where we'll be coming from!
-	
-	return if !($app->param('customfield_beacon'));
-	
-	my @fields = $app->param;
-	foreach (@fields) {
-        if (m/(.*)_required$/ && $app->param($_) && !$app->param($1)) {
-			$app->send_http_header;
-			$app->print($app->show_error($plugin->translate('Please ensure all required fields have been filled in.')));
-			$app->{no_print_body} = 1;
-			exit();
-        }		
+
+	return if !($app->param('locator_beacon'));
+
+	my $field_address = $plugin->get_config_value('field_address');
+	my $field_map = $plugin->get_config_value('field_map');
+
+	if (($field_address >= 2) && (! $app->param('location_address'))) {
+		$app->send_http_header;
+		$app->print($app->show_error($plugin->translate('Please ensure address fields have been filled in.')));
+		$app->{no_print_body} = 1;
+		exit();
+	}
+	if (($field_map >= 2) && ((! $app->param('location_latitude_g')) || ! $app->param('location_longitude_g'))) {
+		$app->send_http_header;
+		$app->print($app->show_error($plugin->translate('Please ensure map fields have been filled in.')));
+		$app->{no_print_body} = 1;
+		exit();
 	}
 }
 
@@ -231,43 +251,60 @@ sub post_save {
 	my ($plugin, $cb, $obj, $original) = @_;
 	my $app = MT->instance;
 	my $q = $app->{query};
+	my $blog_id = $q->param('blog_id');
+	my $datasource = $obj->datasource;
+
+	my $scope = $blog_id ? ('blog:' . $blog_id) : 'system';
+	if ($datasource ne 'entry') {
+		$scope = undef;
+	}
+
+	require UNIVERSAL;
+	if (UNIVERSAL::isa($obj, 'MT::Blog')) {
+		if (! $blog_id) {
+			$plugin->set_config_value(
+				'enable_for_entry',
+				$plugin->get_config_value('enable_for_entry', 'system'),
+				'blog:' . $obj->id
+			);
+		}
+	}
+
+	my $enabled = $plugin->get_config_value(
+		'enable_for_' . $datasource, $scope
+	);
+	if (! $enabled) {
+		return;
+	}
 	
 	return if !($app->can('param')); # God knows where we'll be coming from!
 
-	return if !($q->param('customfield_beacon'));
-	my $blog_id = $q->param('blog_id');
-	my $id = $obj->id;
-	my $datasource = $obj->datasource;
+	return if !($app->param('locator_beacon'));
 
-	my (@fields, @temp_fields, $data);	
+	my $field_address = $plugin->get_config_value('field_address');
+	my $field_map = $plugin->get_config_value('field_map');
 
- 	@temp_fields = $q->param();
-    foreach (@temp_fields) {
-        if (m/^customfield_(.*?)$/) {
-            $data->{$1} = $q->param("customfield_$1");
-        }
-    }
-	require MT::PluginData;
-	my $obj_data = MT::PluginData->get_by_key({ plugin => 'CustomFields', key => "${datasource}_${id}"});	
-	$obj_data->data($data);
-	$obj_data->save or die $obj_data->errstr;
-	
-	if($app->user) {
-		require MT::PluginData;
-		my $author_data = MT::PluginData->get_by_key({ plugin => 'CustomFields', key => 'author_'.$app->user->id });
-		my $data = $author_data->data;
-	    foreach (@temp_fields) {
-	        if (m/^customfield_(.*?)_height$/) {
-	            $data->{"${1}_height"} = $q->param("customfield_${1}_height");
-	        }
-	    }	
-		$author_data->data($data);
-		$author_data->save or die $author_data->errstr;		
+	require Locator::Location;
+	my $id_field = $datasource . '_id';
+	my $loc = Locator::Location->load({$id_field => $obj->id});
+	if (! $loc) {
+		$loc = Locator::Location->new;
+		$loc->blog_id(0);
+		$loc->author_id(0);
+		$loc->entry_id(0);
+		$loc->$id_field($obj->id);
 	}
-	
-	if($datasource eq 'entry') {
-		&rebuild_author_archives($app, $obj);
+
+	if ($field_address) {
+		$loc->address($q->param('location_address'));
 	}
+	if ($field_map) {
+		$loc->latitude_g($q->param('location_latitude_g'));
+		$loc->longitude_g($q->param('location_longitude_g'));
+		$loc->zoom_g($q->param('location_zoom_g') || 0);
+	}
+
+	$loc->save or die $loc->errstr;
 }
 
 sub _field_loop_param {
@@ -278,15 +315,14 @@ sub _field_loop_param {
 	my $id = $q->param('id') || ($datasource eq 'author' ? $q->param('author_id') : '');
 	my $perms = $app->{perms};
 
-	my $class = $app->model($datasource);
-	my $data = $class->load({$datasource . '_id' => $id});
-
-	if (! $data) {
-		$data = {'latitude_g' => '', 'longitude_g' => ''};
+	my $data = undef;
+	if ($id) {
+		require Locator::Location;
+		$data = Locator::Location->load({$datasource . '_id' => $id});
 	}
 
-	foreach my $key ('latitude_g', 'longitude_g') {
-		$param->{$key} = $data->{$key};
+	foreach my $key ('address', 'latitude_g', 'longitude_g', 'zoom_g') {
+		$param->{'location_' . $key} = $data ? $data->$key : '';
 	}
 }
 
@@ -404,6 +440,11 @@ HTML
 sub _edit_blog {
 	my ($plugin, $cb, $app, $tmpl) = @_;
 	my ($old, $new);
+
+	my $enabled = $plugin->get_config_value('enable_for_blog');
+	if (! $enabled) {
+		return;
+	}
 	
 	#_add_defaults($plugin, $app, $tmpl);
 
@@ -418,7 +459,15 @@ sub _edit_blog {
 
 sub _edit_entry {
 	my ($plugin, $cb, $app, $tmpl) = @_;
+	my $blog_id = $app->param('blog_id');
 	my ($old, $new);
+
+	my $enabled = $plugin->get_config_value(
+		'enable_for_entry', 'blog:' . $blog_id
+	);
+	if (! $enabled) {
+		return;
+	}
 	
 	#_add_defaults($plugin, $app, $tmpl);
 
@@ -433,17 +482,23 @@ sub _edit_entry {
 
 sub _edit_author {
 	my ($plugin, $cb, $app, $tmpl) = @_;
-	my ($old, $new);
+	my ($old, $old2, $new);
+
+	my $enabled = $plugin->get_config_value('enable_for_author');
+	if (! $enabled) {
+		return;
+	}
 	
 	#_add_defaults($plugin, $app, $tmpl);
 
 	my $edit_map_tmpl = File::Spec->catdir($plugin->{full_path},'tmpl','edit_map_author.tmpl');
 	
 	$old = '<fieldset>[\s\n]*<h3><__trans phrase="Preferences"></h3>';
+	$old2 = '<h3><__trans phrase="New User Defaults"></h3>';
 #	$old = quotemeta($old);
 	$new = $plugin->load_tmpl_translated($edit_map_tmpl);
 
-	$$tmpl =~ s/($old)/$new\n$1\n/;
+	$$tmpl =~ s/($old|$old2)/$new\n$1\n/;
 }
 
 sub _upload_field_id {

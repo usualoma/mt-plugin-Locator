@@ -38,7 +38,7 @@ use MT 3.3;   # requires MT 3.3 or later
 
 use base 'MT::Plugin';
 our $VERSION = '0.1';
-our $SCHEMA_VERSION = '0.3';
+our $SCHEMA_VERSION = '0.4';
 
 my $plugin;
 MT->add_plugin($plugin = __PACKAGE__->new({
@@ -52,18 +52,22 @@ MT->add_plugin($plugin = __PACKAGE__->new({
 	doc_link        => "http://www.toi-planning.net/mt/locator/manual",
 	object_classes  => [ 'Locator::Location' ],
 	settings => new MT::PluginSettings([
-		['field_address'],
-		['field_map'],
+		['field_address', {Default => 2}],
+		['field_map', {Default => 2}],
+		['field_zoom', {Default => 1}],
 
-		['enable_for_author'],
-		['enable_for_blog'],
-		['enable_for_entry'],
+		['enable_for_author', {Default => 1}],
+		['enable_for_blog', {Default => 1}],
+		['enable_for_entry', {Default => 1}],
 		['googlemap_api_key'],
 	]),
 	system_config_template => 'locator_system_config.tmpl',
+	blog_config_template => 'locator_blog_config.tmpl',
 	callbacks => {
 		'MT::App::CMS::template_param.edit_author' => sub { runner('_field_loop_param', 'app', @_); },
+		'MT::App::CMS::template_param.cfg_system_users' => sub { runner('_field_loop_param', 'app', @_); },
 		'MT::App::CMS::template_source.edit_author' => sub { runner('_edit_author', 'app', @_); },	
+		'MT::App::CMS::template_source.cfg_system_users' => sub { runner('_edit_author', 'app', @_); },	
 		'MT::Author::pre_save' => sub { runner('pre_save', 'app', @_); },	
 		'MT::Author::post_save' => sub { runner('post_save', 'app', @_); },		
 
@@ -93,15 +97,27 @@ MT->add_plugin($plugin = __PACKAGE__->new({
 		);
 	}
 }}({
-	'LocationFieldAddress' => '_hdlr_location_field',
-	'LocationFieldMap' => '_hdlr_location_field',
+	'LocatorFieldAddress' => '_hdlr_locator_field',
+	'LocatorFieldMap' => '_hdlr_locator_field',
+	'LocatorFieldZoom' => '_hdlr_locator_field',
 
-	'LocationEnableForAuthor' => '_hdlr_location_enable_for',
-	'LocationEnableForBlog' => '_hdlr_location_enable_for',
-	'LocationEnableForEntry' => '_hdlr_location_enable_for',
+	'LocatorEnableForAuthor' => '_hdlr_locator_enable_for',
+	'LocatorEnableForBlog' => '_hdlr_locator_enable_for',
+	'LocatorEnableForEntry' => '_hdlr_locator_enable_for',
 
 	'GoogleMapAPIKey' => '_hdlr_googlemap_api_key',
+
+	'LocatorGoogleMapMobile' => '_hdlr_locator_google_map_mobile',
+
+	'LocatorLatitude' => '_hdlr_locator_latitude_g',
+	'LocatorLongitude' => '_hdlr_locator_longitude_g',
+	'LocatorZoom' => '_hdlr_locator_zoom_g',
 });
+
+MT::Template::Context->add_container_tag(
+	'LocatorGoogleMap' =>
+	sub { runner('_hdlr_locator_google_map', 'template', @_); }
+);
 
 # Allows external access to plugin object: MT::Plugin::Locator->instance
 sub instance { $plugin; }

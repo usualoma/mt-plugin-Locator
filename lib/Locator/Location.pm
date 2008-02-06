@@ -44,6 +44,7 @@ __PACKAGE__->install_properties({
 
 			'address' => 'string(255) not null',
 
+			'zoom_g' => 'smallint not null',
 			'latitude_g' => 'string(32) not null',
 			'longitude_g' => 'string(32) not null',
 		},

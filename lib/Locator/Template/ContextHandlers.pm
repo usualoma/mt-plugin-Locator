@@ -33,7 +33,7 @@ package Locator::Template::ContextHandlers;
 
 use strict;
 
-sub _hdlr_location_enable_for {
+sub _hdlr_locator_enable_for {
     my ($plugin, $ctx, $args) = @_;
     my $blog_id = $ctx->stash('blog_id');
 	if (! $blog_id) {
@@ -44,7 +44,7 @@ sub _hdlr_location_enable_for {
 	}
 
 	my $type = lc($ctx->this_tag);
-	$type =~ s/mtlocationenablefor//;
+	$type =~ s/mtlocatorenablefor//;
 
 	my $hash;
 	if ($blog_id && ($type eq 'entry')) {
@@ -54,10 +54,10 @@ sub _hdlr_location_enable_for {
 		$hash = $plugin->get_config_hash();
 	}
 
-	return $hash->{'enable_for_' . $type}
+	return $hash->{'enable_for_' . $type} || 0;
 }
 
-sub _hdlr_location_field {
+sub _hdlr_locator_field {
     my ($plugin, $ctx, $args) = @_;
     my $blog_id = $ctx->stash('blog_id');
 	if (! $blog_id) {
@@ -68,7 +68,7 @@ sub _hdlr_location_field {
 	}
 
 	my $type = lc($ctx->this_tag);
-	$type =~ s/mtlocationfield//;
+	$type =~ s/mtlocatorfield//;
 
 	my $hash;
 	if ($blog_id) {
@@ -78,13 +78,207 @@ sub _hdlr_location_field {
 		$hash = $plugin->get_config_hash();
 	}
 
-	return $hash->{'field_' . $type}
+	return $hash->{'field_' . $type} || 0;
 }
 
 sub _hdlr_googlemap_api_key {
     my ($plugin, $ctx, $args) = @_;
+
 	my $hash = $plugin->get_config_hash();
-	return $hash->{googlemap_api_key};
+	my $apikey = $hash->{googlemap_api_key};
+
+	if (
+		$ctx->{current_archive_type} ||
+		$ctx->{archive_type} ||
+		$ctx->{inside_mt_categories}
+	) {
+		my $blog_id = $ctx->stash('blog_id');
+		if (! $blog_id) {
+			my $b = $ctx->stash('blog');
+			if ($b) {
+				$blog_id = $b->id;
+			}
+		}
+		my $hash = $plugin->get_config_hash('blog:' . $blog_id);
+		$apikey = $hash->{googlemap_api_key} || $apikey;
+	}
+
+	return $apikey;
+}
+
+sub __detect_location {
+    my ($plugin, $ctx, $args) = @_;
+
+	require Locator::Location;
+
+	my $for = $args->{of};
+	if ((! $for) || ($for eq 'entry')) {
+		my $entry = $ctx->stash('entry');
+		if ($entry) {
+			my $loc = Locator::Location->load({'entry_id' => $entry->id});
+			if (! $loc) {
+				return 0;
+			}
+			return $loc;
+		}
+
+		if ($for eq 'entry') {
+			return 0;
+		}
+	}
+
+	if ((! $for) || ($for eq 'blog')) {
+		my $blog_id = $ctx->stash('blog_id');
+		if (! $blog_id) {
+			my $b = $ctx->stash('blog');
+			if ($b) {
+				$blog_id = $b->id;
+			}
+		}
+		if ($blog_id) {
+			my $loc = Locator::Location->load({'blog_id' => $blog_id});
+			if (! $loc) {
+				return 0;
+			}
+			return $loc;
+		}
+
+		if ($for eq 'blog') {
+			return 0;
+		}
+	}
+
+	my $author = $ctx->stash('author');
+	if ($author) {
+		my $loc = Locator::Location->load({'author_id' => $author->id});
+		if (! $loc) {
+			return 0;
+		}
+		return $loc;
+	}
+	else {
+		return 0;
+	}
+}
+
+sub _hdlr_locator_google_map_mobile {
+    my ($plugin, $ctx, $args) = @_;
+	my $loc = &__detect_location(@_);
+	if (! $loc) {
+		return '';
+	}
+
+	my $lng = $loc->longitude_g;
+	my $lat = $loc->latitude_g;
+
+	if ((! $lng) || (! $lat)) {
+		return '';
+	}
+
+	my ($pre, $post) = split(/\./, $lng);
+	$lng = $pre . substr($post, 0, 6);
+	($pre, $post) = split(/\./, $lat);
+	$lat = $pre . substr($post, 0, 6);
+
+	my $zm = int((19 - $loc->zoom_g + 1) * 17 / 20 + 0.5);
+	if (defined($args->{zoom})) {
+		$zm = $args->{zoom};
+	}
+
+	my $width = $args->{width} || '200';
+	my $height = $args->{height} || '200';
+
+	my $img = '<img src="' .
+	'http://maps.google.com/mapprint?' .
+	'&tstyp=4' . 
+	'&c=' . $lng . ',' . $lat .
+	"&r=$width,$height" .
+	#'&z=3' .
+	'&z=' . $zm .
+	'&l=' . $lng . ',' . $lat . ',' . 15 .
+	'"';
+
+	if ($args->{id}) {
+		$img .= ' id="' . $args->{id} . '"';
+	}
+	if ($args->{class}) {
+		$img .= ' class="' . $args->{class} . '"';
+	}
+	if ($args->{style}) {
+		$img .= ' style="' . $args->{style} . '"';
+	}
+
+	$img . '/>';
+}
+
+sub _hdlr_locator_google_map {
+    my ($plugin, $ctx, $args, $cond) = @_;
+    my $builder = $ctx->stash('builder');
+    my $tokens = $ctx->stash('tokens');
+
+	my $loc = &__detect_location(@_);
+	if (! $loc) {
+		return '';
+	}
+
+	my $lng = $loc->longitude_g;
+	my $lat = $loc->latitude_g;
+
+	if ((! $lng) || (! $lat)) {
+		return '';
+	}
+
+	$ctx->var('LocatorMapID', $args->{id} || 'locator_map');
+	$ctx->var('LocatorMapClass', $args->{lass} || '');
+	$ctx->var('LocatorMapStyle', $args->{style} || '');
+	$ctx->var('LocatorMapWidth', $args->{width} || '400px');
+	$ctx->var('LocatorMapHeight', $args->{height} || '400px');
+
+	if (defined($args->{zoom})) {
+		$ctx->stash('locator_zoom', $args->{zoom});
+	}
+
+	defined(my $inner = $builder->build($ctx, $tokens, $cond))
+		or return $ctx->error($builder->errstr);
+	$ctx->var('LocatorInfoWindow', $inner);
+
+	my $edit_map_tmpl = File::Spec->catdir($plugin->{full_path},'tmpl','tag_google_map.tmpl');
+	my $tmpl = do { open(my $fh, $edit_map_tmpl); local $/; <$fh> };
+	my $tmpl_token = $builder->compile($ctx, $tmpl);
+
+	$ctx->stash('locator_zoom', undef);
+
+	$builder->build($ctx, $tmpl_token) or $ctx->error($builder->errstr);
+}
+
+sub _hdlr_locator_latitude_g {
+    my ($plugin, $ctx, $args) = @_;
+	my $loc = &__detect_location(@_);
+	if (! $loc) {
+		return '';
+	}
+
+	return $ctx->stash('locator_latitude') || $loc->latitude_g || '';
+}
+
+sub _hdlr_locator_longitude_g {
+    my ($plugin, $ctx, $args) = @_;
+	my $loc = &__detect_location(@_);
+	if (! $loc) {
+		return '';
+	}
+
+	return $ctx->stash('locator_longitude') || $loc->longitude_g || '';
+}
+
+sub _hdlr_locator_zoom_g {
+    my ($plugin, $ctx, $args) = @_;
+	my $loc = &__detect_location(@_);
+	if (! $loc) {
+		return '';
+	}
+
+	return $ctx->stash('locator_zoom') || $loc->zoom_g || '';
 }
 
 1;

@@ -1,19 +1,19 @@
 <mtapp:setting
-	id="locator_field"
-	label="<__trans phrase="location-field address">"
+	id="locator_field_address"
+	label="<__trans phrase="locator-field address">"
 >
 
 <ul>
 <li>
-<input type="radio" name="field_address" value="0" <MTIf tag="LocationFieldAddress" eq="0">checked="checked"</MTIf> /> <MT_TRANS phrase="location-field not to use">
+<input type="radio" name="field_address" value="0" <MTIf tag="LocatorFieldAddress" eq="0">checked="checked"</MTIf> /> <MT_TRANS phrase="locator-field not to use">
 </li>
 
 <li>
-<input type="radio" name="field_address" value="1" <MTIf tag="LocationFieldAddress" eq="1">checked="checked"</MTIf> /> <MT_TRANS phrase="location-field use">
+<input type="radio" name="field_address" value="1" <MTIf tag="LocatorFieldAddress" eq="1">checked="checked"</MTIf> /> <MT_TRANS phrase="locator-field any">
 </li>
 
 <li>
-<input type="radio" name="field_address" value="2" <MTIf tag="LocationFieldAddress" eq="2">checked="checked"</MTIf> /> <MT_TRANS phrase="location-field required">
+<input type="radio" name="field_address" value="2" <MTIf tag="LocatorFieldAddress" eq="2">checked="checked"</MTIf> /> <MT_TRANS phrase="locator-field required">
 </li>
 
 </ul>
@@ -21,43 +21,64 @@
 </mtapp:setting>
 
 <mtapp:setting
-	id="locator_field"
-	label="<__trans phrase="location-field map">"
+	id="locator_field_map"
+	label="<__trans phrase="locator-field map">"
 >
 
 <ul>
 <li>
-<input type="radio" name="field_map" value="0" <MTIf tag="LocationFieldMap" eq="0">checked="checked"</MTIf> /> <MT_TRANS phrase="location-field not to use">
+<input type="radio" name="field_map" value="0" <MTIf tag="LocatorFieldMap" eq="0">checked="checked"</MTIf> onclick="toggleSubPrefs(this)" /> <MT_TRANS phrase="locator-field not to use">
 </li>
 
 <li>
-<input type="radio" name="field_map" value="1" <MTIf tag="LocationFieldMap" eq="1">checked="checked"</MTIf> /> <MT_TRANS phrase="location-field use">
+<input type="radio" name="field_map" value="1" <MTIf tag="LocatorFieldMap" eq="1">checked="checked"</MTIf> onclick="toggleSubPrefs(this)"/> <MT_TRANS phrase="locator-field any">
 </li>
 
 <li>
-<input type="radio" name="field_map" value="2" <MTIf tag="LocationFieldMap" eq="2">checked="checked"</MTIf> /> <MT_TRANS phrase="location-field required">
+<input type="radio" name="field_map" value="2" <MTIf tag="LocatorFieldMap" eq="2">checked="checked"</MTIf> onclick="toggleSubPrefs(this)"/> <MT_TRANS phrase="locator-field required">
 </li>
 
 </ul>
 
 </mtapp:setting>
+
+<div id="field_map-prefs" style="display: <MTIf tag="LocatorFieldMap" eq="0">none<MTElse>block</MTElse></MTIf>">
+<mtapp:setting
+	id="locator_field_zoom"
+	label="<__trans phrase="locator-field zoom">"
+>
+
+<ul>
+
+<li>
+<input type="radio" name="field_zoom" value="0" <MTIf tag="LocatorFieldZoom" eq="0">checked="checked"</MTIf> /> <MT_TRANS phrase="locator-field not to use">
+</li>
+
+<li>
+<input type="radio" name="field_zoom" value="1" <MTIf tag="LocatorFieldZoom" eq="1">checked="checked"</MTIf> /> <MT_TRANS phrase="locator-field use">
+</li>
+
+</ul>
+
+</mtapp:setting>
+</div>
 
 <mtapp:setting
 	id="locator_enable"
-	label="<__trans phrase="Which context enable location-field for">"
+	label="<__trans phrase="Which context enable locator-field for">"
 >
 
 <ul>
 <li>
-<input type="checkbox" name="enable_for_author" id="enable_for_author" value="1" <MTIfNonZero tag="LocationEnableForAuthor">checked="checked"</MTIfNonZero> /> <MT_TRANS phrase="for author">
+<input type="checkbox" name="enable_for_author" id="enable_for_author" value="1" <MTIfNonZero tag="LocatorEnableForAuthor">checked="checked"</MTIfNonZero> /> <MT_TRANS phrase="for author">
 </li>
 
 <li>
-<input type="checkbox" name="enable_for_blog" id="enable_for_blog" value="1" <MTIfNonZero tag="LocationEnableForBlog">checked="checked"</MTIfNonZero> /> <MT_TRANS phrase="for blog">
+<input type="checkbox" name="enable_for_blog" id="enable_for_blog" value="1" <MTIfNonZero tag="LocatorEnableForBlog">checked="checked"</MTIfNonZero> /> <MT_TRANS phrase="for blog">
 </li>
 
 <li>
-<input type="checkbox" name="enable_for_entry" id="enable_for_entry" value="1" <MTIfNonZero tag="LocationEnableForEntry">checked="checked"</MTIfNonZero> onclick="toggleAdvancedPrefs(event, 'enable_for_entry');" /> <MT_TRANS phrase="for entry">
+<input type="checkbox" name="enable_for_entry" id="enable_for_entry" value="1" <MTIfNonZero tag="LocatorEnableForEntry">checked="checked"</MTIfNonZero> onclick="toggleAdvancedPrefs(event, 'enable_for_entry');" /> <MT_TRANS phrase="for entry">
 </li>
 
 </ul>
@@ -70,7 +91,7 @@
 	label="<__trans phrase="Which blogs">"
 >
 <MTBlogs ids="all">
-<input type="checkbox" value="1" name="enable_for_entry_<MTBlogID/>" <MTIfNonZero tag="LocationEnableForEntry">checked="checked"</MTIfNonZero>/><MTBlogName/><br/>
+<input type="checkbox" value="1" name="enable_for_entry_<MTBlogID/>" <MTIfNonZero tag="LocatorEnableForEntry">checked="checked"</MTIfNonZero>/><MTBlogName/><br/>
 </MTBlogs>
 </mtapp:setting>
 </div>

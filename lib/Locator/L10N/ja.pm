@@ -41,25 +41,38 @@ use vars qw( %Lexicon );
 	'location ties to the author/blog/entry.' =>
 	'ユーザー/ブログ/エントリーに地図を設定できるようにします。',
 
-	'location-field address' => '住所',
-	'location-field map' => '地図',
-	'location-field not to use' => '使わない',
-	'location-field use' => '任意で設定可能',
-	'location-field required' => '必須項目',
+	'locator-field address' => '住所',
+	'locator-field map' => '地図',
+	'locator-field zoom' => 'ズーム',
 
-	'Which context enable location-field for' => 'どのコンテキストで関連付けを有効にするか',
+	'locator-field not to use' => '使わない',
+	'locator-field use' => '使う',
+	'locator-field any' => '任意で設定可能',
+	'locator-field required' => '必須項目',
+
+	'Which context enable locator-field for' => 'どのコンテキストで関連付けを有効にするか',
 	'for author' => 'ユーザー',
 	'for blog' => 'ブログ',
 	'for entry' => 'エントリー',
 	'Which blogs' => 'エントリーへの関連付けを有効にするブログ',
 	'GoogleMap API Key' => 'GoogleMapのAPIキー',
 
+	'API Key(When this blog has specific key)' => 'API Key<br/>(このブログが独自にAPIキーを必要とする場合)',
 	'Map' => '地図',
 	'Address' => '住所',
 
-	'Location default latitude' => '41.902277',
-	'Location default longitude' => '136.845703',
+	'Location default latitude' => '35.674311',
+	'Location default longitude' => '136.862834',
 	'Location default zoomlevel' => '10',
+	
+	'Please ensure address fields have been filled in.' => '住所は必須項目です',
+	'Please ensure map fields have been filled in.' => '地図は必須項目です',
+
+	'Set this location' => 'この場所を指定する',
+	'Unset this location' => '指定を解除する',
+
+	'updated' => '更新されました',
+	'Unset this location OK?' => '指定を解除してもよろしいですか？',
 );
 
 1;
