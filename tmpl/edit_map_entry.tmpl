@@ -212,7 +212,7 @@ if (GBrowserIsCompatible()) {
 			zoom = '<MT_TRANS phrase="Location default zoomlevel">';
 		}
 
-		if (lat && lng) {
+		if (lat && lng && (lat !== '0') && (lng !== '0')) {
 			var default_point = new GLatLng(lat,lng);
 		}
 		else {
@@ -221,7 +221,7 @@ if (GBrowserIsCompatible()) {
 
 		map.setCenter(default_point, parseInt(zoom));
 
-		if (lat && lng) {
+		if (lat && lng && (lat !== '0') && (lng !== '0')) {
 			updateLocationPoint(default_point);
 		}
 
