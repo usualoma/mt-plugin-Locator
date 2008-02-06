@@ -61,8 +61,12 @@ MT->add_plugin($plugin = __PACKAGE__->new({
 		['enable_for_entry', {Default => 1}],
 		['googlemap_api_key'],
 	]),
-	system_config_template => 'locator_system_config.tmpl',
-	blog_config_template => 'locator_blog_config.tmpl',
+	system_config_template =>
+		(MT->version_number >= 4 ) ?
+			'locator_system_config.tmpl' : 'locator_system_config_33.tmpl',
+	blog_config_template =>
+		(MT->version_number >= 4 ) ?
+			'locator_blog_config.tmpl' : 'locator_blog_config_33.tmpl',
 	callbacks => {
 		'MT::App::CMS::template_param.edit_author' => sub { runner('_field_loop_param', 'app', @_); },
 		'MT::App::CMS::template_param.cfg_system_users' => sub { runner('_field_loop_param', 'app', @_); },
@@ -138,6 +142,7 @@ sub init_registry {
 
 if (MT->version_number < 4 ) {
 	&{sub{
+		require MT::Template::Context;
 		my ($hash) = @_;
 		foreach my $key (keys(%$hash)) {
 			MT::Template::Context->add_tag(
@@ -147,6 +152,7 @@ if (MT->version_number < 4 ) {
 	}}($template_tags);
 
 	&{sub{
+		require MT::Template::Context;
 		my ($hash) = @_;
 		foreach my $key (keys(%$hash)) {
 			MT::Template::Context->add_container_tag(
@@ -154,6 +160,23 @@ if (MT->version_number < 4 ) {
 			);
 		}
 	}}($template_container_tags);
+
+	require MT;
+    MT->add_callback(
+		'*::AppTemplateSource.edit_entry', 10, $plugin,
+		sub { runner('_edit_entry', 'app', @_); }
+	);
+    MT->add_callback(
+		'*::AppTemplateParam.edit_entry', 10, $plugin,
+		sub { runner('_field_loop_param', 'app', @_); }
+	);
+    require MT::Entry;
+    MT::Entry->add_callback(
+		'pre_save', 10, $plugin, sub { runner('pre_save', 'app', @_); }
+	);
+    MT::Entry->add_callback(
+		'post_load', 10, $plugin, sub { runner('post_save', 'app', @_); }
+	);
 }
 
 # Allows external access to plugin object: MT::Plugin::Locator->instance
@@ -187,6 +210,11 @@ sub save_config {
 			}
 			else {
 				$enable_for_entry = 0;
+			}
+
+			if (MT->version_number < 4 ) {
+				#always enabled
+				$enable_for_entry = 1;
 			}
 			
 			$plugin->SUPER::save_config(

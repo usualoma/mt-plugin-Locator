@@ -2,45 +2,36 @@
 <fieldset>
 <h3><MT_TRANS phrase="Map"></h3>	
 
-<mtapp:setting
-	id="location_address"
-	label="<__trans phrase="Address">"
-	label_class="top-label"
-	hint="<__trans phrase="The address of the site associated with .">">
-	<div class="textarea-wrapper">
-	<input name="location_address" id="location_address" class="full-width" value="<mt:var name="location_address" escape="html">" onchange="updateSearchFormField();"/>
-	</div>
-</mtapp:setting>
+<MT_TRANS phrase="Address">
+<div class="textarea-wrapper">
+<input name="location_address" id="location_address" style="width: 100%;" value="<TMPL_VAR NAME="location_address">" onchange="updateSearchFormField();"/>
+</div>
 
-<mtapp:setting
-	id="location_map"
-	label="<__trans phrase="Map">"
-	label_class="top-label"
-	hint="<__trans phrase="The location of the site associated with .">">
+<MT_TRANS phrase="Map">
 <div id="candidate_window" style="display: none; text-align: center;">
-<input type="button" value="<__trans phrase="Set this location">"/>
+<input type="button" value="<MT_TRANS phrase="Set this location">"/>
 </div>
 <div id="locate_window" style="display: none; text-align: center;">
-<input type="button" value="<__trans phrase="Unset this location">"/>
+<input type="button" value="<MT_TRANS phrase="Unset this location">"/>
 </div>
 <div id="update_zoom_window" style="display: none; width: 150px; background: white;text-align: center;">
-<__trans phrase="Zoom has changed. Did you update zoom value?"><br/>
-<input type="button" value="<__trans phrase="update">"/>
+<MT_TRANS phrase="Zoom has changed. Did you update zoom value?"><br/>
+<input type="button" value="<MT_TRANS phrase="update">"/>
 </div>
 
-<input name="location_latitude_g" type="hidden" id="location_latitude_g" value="<mt:var name="location_latitude_g">" />
-<input name="location_longitude_g" type="hidden" id="location_longitude_g" value="<mt:var name="location_longitude_g">" />
-<input name="location_zoom_g" type="hidden" id="location_zoom_g" value="<mt:var name="location_zoom_g">" />
+<input name="location_latitude_g" type="hidden" id="location_latitude_g" value="<TMPL_VAR name="location_latitude_g">" />
+<input name="location_longitude_g" type="hidden" id="location_longitude_g" value="<TMPL_VAR name="location_longitude_g">" />
+<input name="location_zoom_g" type="hidden" id="location_zoom_g" value="<TMPL_VAR name="location_zoom_g">" />
 
 <div id="location_map" class="full-with" style="height: 500px"></div>
 
 <script
-	src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=<MTGoogleMapAPIKey/>"	type="text/javascript"
+	src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=<TMPL_VAR NAME="location_google_map_api_key">"	type="text/javascript"
 >
 </script>
 
 <script
-	src="http://www.google.com/uds/api?file=uds.js&v=1.0&key=<MTGoogleMapAPIKey/>"
+	src="http://www.google.com/uds/api?file=uds.js&v=1.0&key=<TMPL_VAR NAME="location_google_map_api_key">"
 	type="text/javascript"
 ></script>
 <script
@@ -57,6 +48,9 @@
 
 if (GBrowserIsCompatible()) {
 	(function() {
+		function $(id) {
+			return document.getElementById(id);
+		}
 		var locate = null;
 		var cand = null;
 		var map = null;
@@ -129,7 +123,7 @@ if (GBrowserIsCompatible()) {
 			lw.style.display = '';
 			var input = lw.getElementsByTagName('input')[0];
 			input.onclick = function() {
-				if (window.confirm('<__trans phrase="Unset this location OK?">')) {
+				if (window.confirm('<MT_TRANS phrase="Unset this location OK?">')) {
 					$('location_latitude_g').value = 0;
 					$('location_longitude_g').value = 0;
 					//$('location_zoom_g').value = '';
@@ -180,7 +174,7 @@ if (GBrowserIsCompatible()) {
 			input.onclick = function() {
 				latlng = cand.getPoint();
 				map.removeOverlay(cand);
-				updateLocationPoint(latlng, '<__trans phrase="updated">');
+				updateLocationPoint(latlng, '<MT_TRANS phrase="updated">');
 			};
 
 			GEvent.addListener(cand, 'infowindowclose', function() {
@@ -205,9 +199,9 @@ if (GBrowserIsCompatible()) {
 
 		map.addControl(new GLargeMapControl());
 
-		var lat = '<mt:var name="location_latitude_g">';
-		var lng = '<mt:var name="location_longitude_g">';
-		var zoom = '<mt:var name="location_zoom_g">';
+		var lat = '<TMPL_VAR name="location_latitude_g">';
+		var lng = '<TMPL_VAR name="location_longitude_g">';
+		var zoom = '<TMPL_VAR name="location_zoom_g">';
 		if (zoom === '') {
 			zoom = '<MT_TRANS phrase="Location default zoomlevel">';
 		}
@@ -236,7 +230,7 @@ if (GBrowserIsCompatible()) {
 		var local_search = new google.maps.LocalSearch(options); 
 		map.addControl(local_search);
 
-		if (<$MTLocatorFieldZoom$>) {
+		if ('<TMPL_VAR NAME="location_zoom_g">') {
 			map.addControl(new updateZoomValue());
 		}
 
@@ -289,6 +283,5 @@ if (GBrowserIsCompatible()) {
 }
 //]]>
 </script>
-</mtapp:setting>
 
 </fieldset>

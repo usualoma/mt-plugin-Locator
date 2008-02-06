@@ -228,11 +228,22 @@ sub _hdlr_locator_google_map {
 		return '';
 	}
 
-	$ctx->var('LocatorMapID', $args->{id} || 'locator_map');
-	$ctx->var('LocatorMapClass', $args->{lass} || '');
-	$ctx->var('LocatorMapStyle', $args->{style} || '');
-	$ctx->var('LocatorMapWidth', $args->{width} || '400px');
-	$ctx->var('LocatorMapHeight', $args->{height} || '400px');
+	if (MT->version_number >= 4) {
+		sub ctx_set_var {
+			$ctx->var(@_);
+		}
+	}
+	else {
+		sub ctx_set_var {
+			$ctx->{__stash}{vars}{$_[0]} = $_[1];
+		}
+	}
+
+	&ctx_set_var('LocatorMapID', $args->{id} || 'locator_map');
+	&ctx_set_var('LocatorMapClass', $args->{lass} || '');
+	&ctx_set_var('LocatorMapStyle', $args->{style} || '');
+	&ctx_set_var('LocatorMapWidth', $args->{width} || '400px');
+	&ctx_set_var('LocatorMapHeight', $args->{height} || '400px');
 
 	if (defined($args->{zoom})) {
 		$ctx->stash('locator_zoom', $args->{zoom});
@@ -240,7 +251,7 @@ sub _hdlr_locator_google_map {
 
 	defined(my $inner = $builder->build($ctx, $tokens, $cond))
 		or return $ctx->error($builder->errstr);
-	$ctx->var('LocatorInfoWindow', $inner);
+	&ctx_set_var('LocatorInfoWindow', $inner);
 
 	my $edit_map_tmpl = File::Spec->catdir($plugin->{full_path},'tmpl','tag_google_map.tmpl');
 	my $tmpl = do { open(my $fh, $edit_map_tmpl); local $/; <$fh> };

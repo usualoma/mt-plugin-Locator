@@ -1,7 +1,7 @@
 <div
-	id="<$MTVar name="LocatorMapID"$>"
-	class="<$MTVar name="LocatorMapClass"$>"
-	style="width: <$MTVar name="LocatorMapWidth"$>; height: <$MTVar name="LocatorMapHeight"$>;<$MTVar name="LocatorMapStyle"$>"
+	id="<$MTGetVar name="LocatorMapID"$>"
+	class="<$MTGetVar name="LocatorMapClass"$>"
+	style="width: <$MTGetVar name="LocatorMapWidth"$>; height: <$MTGetVar name="LocatorMapHeight"$>;<$MTGetVar name="LocatorMapStyle"$>"
 ></div>
 
 <script
@@ -27,7 +27,7 @@
 
 if (GBrowserIsCompatible()) {
 	(function() {
-		map = new GMap2(document.getElementById("<$MTVar name="LocatorMapID"$>"));
+		map = new GMap2(document.getElementById("<$MTGetVar name="LocatorMapID"$>"));
 		map.addControl(new GLargeMapControl());
 
 		var lat = '<$MTLocatorLatitude$>';
@@ -42,9 +42,9 @@ if (GBrowserIsCompatible()) {
 
 		map.setCenter(default_point, parseInt(zoom));
 		map.addOverlay(default_marker)
-		<MTIf name="LocatorInfoWindow" ne="">
-			default_marker.openInfoWindow('<$MTVar name="LocatorInfoWindow"$>');
-		</MTIf>
+		<MTIfNonEmpty var="LocatorInfoWindow">
+			default_marker.openInfoWindow('<$MTGetVar name="LocatorInfoWindow"$>');
+		</MTIfNonEmpty>
 	})();
 }
 //]]>

@@ -149,6 +149,9 @@ sub _field_loop_param {
 	foreach my $key ('address', 'latitude_g', 'longitude_g', 'zoom_g') {
 		$param->{'location_' . $key} = $data ? $data->$key : '';
 	}
+	$param->{'location_google_map_api_key'} = $plugin->get_config_value(
+		'googlemap_api_key'
+	);
 }
 
 sub _edit_blog {
@@ -185,13 +188,23 @@ sub _edit_entry {
 	
 	#_add_defaults($plugin, $app, $tmpl);
 
-	my $edit_map_tmpl = File::Spec->catdir($plugin->{full_path},'tmpl','edit_map_entry.tmpl');
-	
-	$old = '<mt:include name="include/editor.tmpl">';
-#	$old = quotemeta($old);
-	$new = $plugin->load_tmpl_translated($edit_map_tmpl);
+	if (MT->version_number >= 4 ) {
+		my $edit_map_tmpl = File::Spec->catdir($plugin->{full_path},'tmpl','edit_map_entry.tmpl');
+		
+		$old = '<mt:include name="include/editor.tmpl">';
+	#	$old = quotemeta($old);
+		$new = $plugin->load_tmpl_translated($edit_map_tmpl);
 
-	$$tmpl =~ s/($old)/$1\n$new\n/;
+		$$tmpl =~ s/($old)/$1\n$new\n/;
+	}
+	else {
+		my $edit_map_tmpl = File::Spec->catdir($plugin->{full_path},'tmpl','edit_map_entry_33.tmpl');
+		
+		$old = '<TMPL_IF NAME=POSITION_BUTTONS_BOTTOM>';
+		$new = $plugin->load_tmpl_translated($edit_map_tmpl);
+
+		$$tmpl =~ s/($old)/$new\n$1\n/;
+	}
 }
 
 sub _edit_author {
