@@ -70,13 +70,7 @@ sub _hdlr_locator_field {
 	my $type = lc($ctx->this_tag);
 	$type =~ s/mtlocatorfield//;
 
-	my $hash;
-	if ($blog_id) {
-		$hash = $plugin->get_config_hash('blog:' . $blog_id);
-	}
-	else {
-		$hash = $plugin->get_config_hash();
-	}
+	my $hash = $plugin->get_config_hash();
 
 	return $hash->{'field_' . $type} || 0;
 }
@@ -289,7 +283,22 @@ sub _hdlr_locator_zoom_g {
 		return '';
 	}
 
-	return $ctx->stash('locator_zoom') || $loc->zoom_g || '';
+	if ((! $ctx->stash('locator_longitude')) && (! $loc->longitude_g)) {
+		return '';
+	}
+	else {
+		return $ctx->stash('locator_zoom') || $loc->zoom_g || '';
+	}
+}
+
+sub _hdlr_locator_address {
+    my ($plugin, $ctx, $args) = @_;
+	my $loc = &__detect_location(@_);
+	if (! $loc) {
+		return '';
+	}
+
+	return $ctx->stash('locator_address') || $loc->address || '';
 }
 
 1;

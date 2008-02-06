@@ -110,6 +110,7 @@ BEGIN {
 		'LocatorLatitude' => '_hdlr_locator_latitude_g',
 		'LocatorLongitude' => '_hdlr_locator_longitude_g',
 		'LocatorZoom' => '_hdlr_locator_zoom_g',
+		'LocatorAddress' => '_hdlr_locator_address',
 	};
 	our $template_container_tags = {
 		'LocatorGoogleMap' => '_hdlr_locator_google_map',
@@ -217,8 +218,8 @@ sub save_config {
 				$enable_for_entry = 1;
 			}
 			
-			$plugin->SUPER::save_config(
-				{'enable_for_entry' => $enable_for_entry} , 'blog:' . $b->id
+			$plugin->set_config_value(
+				'enable_for_entry', $enable_for_entry, 'blog:' . $b->id
 			);
 		}
 	}

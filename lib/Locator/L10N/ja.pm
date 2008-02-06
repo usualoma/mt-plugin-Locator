@@ -73,6 +73,10 @@ use vars qw( %Lexicon );
 
 	'updated' => '更新されました',
 	'Unset this location OK?' => '指定を解除してもよろしいですか？',
+
+	'Zoom has changed. Did you update zoom value?' =>
+	'ズームが変更されました。この値で更新しますか？',
+	'update' => '更新',
 );
 
 1;
