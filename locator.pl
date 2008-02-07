@@ -69,9 +69,12 @@ MT->add_plugin($plugin = __PACKAGE__->new({
 			'locator_blog_config.tmpl' : 'locator_blog_config_33.tmpl',
 	callbacks => {
 		'MT::App::CMS::template_param.edit_author' => sub { runner('_field_loop_param', 'app', @_); },
-		'MT::App::CMS::template_param.cfg_system_users' => sub { runner('_field_loop_param', 'app', @_); },
 		'MT::App::CMS::template_source.edit_author' => sub { runner('_edit_author', 'app', @_); },	
-		'MT::App::CMS::template_source.cfg_system_users' => sub { runner('_edit_author', 'app', @_); },	
+
+		# not to use
+		#'MT::App::CMS::template_param.cfg_system_users' => sub { runner('_field_loop_param', 'app', @_); },
+		#'MT::App::CMS::template_source.cfg_system_users' => sub { runner('_edit_author', 'app', @_); },	
+
 		'MT::Author::pre_save' => sub { runner('pre_save', 'app', @_); },	
 		'MT::Author::post_save' => sub { runner('post_save', 'app', @_); },		
 
