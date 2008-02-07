@@ -38,6 +38,8 @@ use vars qw( %Lexicon );
 ## The following is the translation table.
 
 %Lexicon = (
+	'toi-planning' => 'ToI企画',
+
 	'location ties to the author/blog/entry.' =>
 	'ユーザー/ブログ/エントリーに地図を設定できるようにします。',
 
