@@ -38,7 +38,7 @@ use MT 3.3;   # requires MT 3.3 or later
 
 use base 'MT::Plugin';
 our $VERSION = '0.1';
-our $SCHEMA_VERSION = '0.4';
+our $SCHEMA_VERSION = '0.6';
 
 my $plugin;
 MT->add_plugin($plugin = __PACKAGE__->new({
@@ -138,7 +138,12 @@ sub init_registry {
 			runner($template_container_tags->{$key}, 'template', @_);
 		};
 	}
-	$plugin->registry($hash);
+
+	require MT;
+	my $app = MT->instance;
+	if(! $app->isa('MT::App::Upgrader')) {
+		$plugin->registry($hash);
+	}
 }
 
 if (MT->version_number < 4 ) {
