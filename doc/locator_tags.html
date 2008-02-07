@@ -1,0 +1,237 @@
+<style type="text/css">
+.tags h3 {
+	margin: 5px 0px 2px 0px;
+}
+.tags h4 {
+	margin: 2px 0px 2px 0px;
+}
+.tags h5 {
+	margin: 1px 0px 1px 0px;
+}
+.tags h5.usage, .tags h5.modifire {
+	margin: 15px 0px 0px 0px;
+}
+.tags hr {
+	margin: 5px 0px;
+}
+
+.tags code {
+	margin: 0px 0px 0px 20px;
+	display: block;
+	background: #eef;
+}
+.tags dl {
+	margin: 0px 0px 0px 20px;
+}
+
+.tags .tag {
+	padding: 5px;
+	margin: 20px 0px;
+	border: gray solid 1px;
+}
+</style>
+
+<div class="tags">
+
+<div class="tag">
+<h3 id="googlemapapikey">&lt;$MTGoogleMapAPIKey$&gt;</h3>
+<h5>function</h5>
+<h4>管理画面で登録した、グーグルマップのAPIキーを表示します</h4>
+
+<h5 class="usage">使いかた</h5>
+<hr/>
+<code>
+&lt;$MTGoogleMapAPIKey$&gt;
+</code>
+</div>
+
+<div class="tag">
+<h3 id="locatorgooglemap">&lt;MTLocatorGoogleMap&gt;</h3>
+<h5>block</h5>
+<h4>グーグルマップ(PC版)を表示します。</h4>
+
+<h5 class="usage">使いかた</h5>
+<hr/>
+<code>
+&lt;MTLocatorGoogleMap&gt;<br/>
+この中の文章がInfoWindowとして表示されます。<br/>
+&lt;$MTEntryExcerpt$&gt;<br/>
+等も可能です<br/>
+&lt;/MTLocatorGoogleMap&gt;
+</code>
+
+<h5 class="modifire">モディファイア</h5>
+<hr/>
+<dl>
+	<dt>for="entry | blog | author"</dt>
+	<dd>対象を指定します。(デフォルト: entry)</dd>
+
+	<dt>id="id"</dt>
+	<dd>idを指定します</dd>
+	<dt>class="class"</dt>
+	<dd>classを指定します</dd>
+	<dt>height="height"</dt>
+	<dd>表示幅を指定します</dd>
+	<dt>width="width"</dt>
+	<dd>表示幅を指定します</dd>
+	<dt>style="style"</dt>
+	<dd>スタイルを指定します</dd>
+
+	<dt>zoom="zoom"</dt>
+	<dd>ズームレベルを指定します</dd>
+</dl>
+</div>
+
+
+<div class="tag">
+<h3 id="locatorgooglemapmobile">&lt;$MTLocatorGoogleMapMobile$&gt;</h3>
+<h5>function</h5>
+<h4>グーグルマップ(携帯版)を表示します。</h4>
+
+<h5 class="usage">使いかた</h5>
+<hr/>
+<code>
+&lt;$MTLocatorGoogleMapMobile$&gt;
+</code>
+
+<h5 class="modifire">モディファイア</h5>
+<hr/>
+<dl>
+	<dt>for="entry | blog | author"</dt>
+	<dd>対象を指定します。(デフォルト: entry)</dd>
+
+	<dt>id="id"</dt>
+	<dd>idを指定します</dd>
+	<dt>class="class"</dt>
+	<dd>classを指定します</dd>
+	<dt>height="height"</dt>
+	<dd>表示幅を指定します</dd>
+	<dt>width="width"</dt>
+	<dd>表示幅を指定します</dd>
+	<dt>style="style"</dt>
+	<dd>スタイルを指定します</dd>
+
+	<dt>zoom="zoom"</dt>
+	<dd>ズームレベルを指定します</dd>
+</dl>
+</div>
+
+<div class="tag">
+<h3 id="locatoraddress">&lt;$MTLocatorAddress$&gt;</h3>
+<code>
+</code>
+<h5>function</h5>
+<h4>住所を表示します</h4>
+
+<h5 class="usage">使いかた</h5>
+<hr/>
+<code>
+&lt;$MTLocatorAddress$&gt;
+</code>
+
+<h5 class="modifire">モディファイア</h5>
+<hr/>
+<dl>
+	<dt>for="entry | blog | author"</dt>
+	<dd>対象を指定します。(デフォルト: entry)</dd>
+</dl>
+</div>
+
+<div class="tag">
+<h3 id="locatorlatitude">&lt;$MTLocatorLatitude$&gt;</h3>
+<code>
+</code>
+<h5>function</h5>
+<h4>緯度を表示します</h4>
+
+<h5 class="usage">使いかた</h5>
+<hr/>
+<code>
+&lt;$MTLocatorLatitude$&gt;
+</code>
+
+<h5 class="modifire">モディファイア</h5>
+<hr/>
+<dl>
+	<dt>for="entry | blog | author"</dt>
+	<dd>対象を指定します。(デフォルト: entry)</dd>
+</dl>
+</div>
+
+<div class="tag">
+<h3 id="locatorlongitude">&lt;$MTLocatorLongitude$&gt;</h3>
+<code>
+</code>
+<h5>function</h5>
+<h4>経度を表示します</h4>
+
+<h5 class="usage">使いかた</h5>
+<hr/>
+<code>
+&lt;$MTLocatorLongitude$&gt;
+</code>
+
+<h5 class="modifire">モディファイア</h5>
+<hr/>
+<dl>
+	<dt>for="entry | blog | author"</dt>
+	<dd>対象を指定します。(デフォルト: entry)</dd>
+</dl>
+</div>
+
+<div class="tag">
+<h3 id="locatorzoom">&lt;$MTLocatorZoom$&gt;</h3>
+<h5>function</h5>
+<h4>ズーム値を表示します</h4>
+
+<h5 class="usage">使いかた</h5>
+<hr/>
+<code>
+&lt;$MTLocatorZoom$&gt;
+</code>
+
+<h5 class="modifire">モディファイア</h5>
+<hr/>
+<dl>
+	<dt>for="entry | blog | author"</dt>
+	<dd>対象を指定します。(デフォルト: entry)</dd>
+</dl>
+</div>
+
+<div class="tag">
+<h3 id="locatorenableforentry">&lt;$MTLocatorEnableForEntry$&gt;</h3>
+<h5>function</h5>
+<h4>管理画面で使われます</h4>
+</div>
+
+<div class="tag">
+<h3 id="locatorenableforblog">&lt;$MTLocatorEnableForBlog$&gt;</h3>
+<h5>function</h5>
+<h4>管理画面で使われます</h4>
+</div>
+
+<div class="tag">
+<h3 id="locatorenableforauthor">&lt;$MTLocatorEnableForAuthor$&gt;</h3>
+<h5>function</h5>
+<h4>管理画面で使われます</h4>
+</div>
+
+<div class="tag">
+<h3 id="locatorfieldaddress">&lt;$MTLocatorFieldAddress$&gt;</h3>
+<h5>function</h5>
+<h4>管理画面で使われます</h4>
+</div>
+
+<div class="tag">
+<h3 id="locatorfieldmap">&lt;$MTLocatorFieldMap$&gt;</h3>
+<h5>function</h5>
+<h4>管理画面で使われます</h4>
+</div>
+
+<div class="tag">
+<h3 id="locatorfieldzoom">&lt;$MTLocatorFieldZoom$&gt;</h3>
+<h5>function</h5>
+<h4>管理画面で使われます</h4>
+</div>
+
+</div>

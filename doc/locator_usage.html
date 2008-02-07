@@ -1,0 +1,90 @@
+<style type="text/css">
+.usage h3 {
+	margin: 5px 0px 2px 0px;
+}
+.usage h4 {
+	margin: 2px 0px 2px 0px;
+}
+.usage h5 {
+	margin: 1px 0px 1px 0px;
+}
+.usage h5.system, .usage h5.blog {
+	margin: 15px 0px 0px 0px;
+}
+.usage hr {
+	margin: 5px 0px;
+}
+
+.usage code {
+	margin: 0px 0px 0px 20px;
+	display: block;
+	background: #eef;
+}
+.usage dl {
+	margin: 0px 0px 0px 20px;
+}
+
+.usage > div {
+	padding: 5px;
+	margin: 20px 0px;
+	border: gray solid 1px;
+}
+
+</style>
+
+<div class="usage">
+
+<div class="install">
+<h3>対応しているMT</h3>
+<ul>
+	<li>MTOS</li>
+	<li>MT4.1</li>
+	<li>MT3.3(一部の機能のみ利用可能)</li>
+</ul>
+</div>
+
+<div class="install">
+<h3>インストール</h3>
+<ol>
+	<li><a href="http://code.google.com/p/locator-mtplugin/downloads/list">ダウンロードページ</a>からアーカイブをダウンロードします</li>
+	<li>ダウンロードしたファイルを展開し、プラグインディレクトリに設置します</li>
+	<li>設置完了です</li>
+</ol>
+</div>
+
+<div class="setting">
+<h3>設定</h3>
+
+<h5 class="system">システム全体の設定</h5>
+<hr/>
+<dl>
+	<dt>住所: 使わない | 任意で設定可能 | 必須項目</dt>
+	<dd>住所項目の使い方の設定です</dd>
+
+	<dt>地図: 使わない | 任意で設定可能 | 必須項目</dt>
+	<dd>地図項目の使い方の設定です</dd>
+
+	<dt>ズーム: 使わない | 使う</dt>
+	<dd>ズーム項目の使い方の設定です</dd>
+
+	<dt>どのコンテキストで関連付けを有効にするか: ユーザー、ブログ、エントリー</dt>
+	<dd>ユーザー、ブログ、エントリーに対して、上で指定した項目を設定するかどうかの設定です</dd>
+
+	<dt>エントリーへの関連付けを有効にするブログ: システム上のブログ</dt>
+	<dd>上の設定で、エントリーのコンテキストに対して設定可能にした場合、どのブログでそれを有効にするのかを選択することができます。</dd>
+
+	<dt>API key: API key</dt>
+	<dd>MT上の編集画面と、出力するページにマップを埋め込んだ場合に、このAPI keyが利用されます。<a href="http://code.google.com/apis/maps/signup.html">API keyのサインアップ</a></dd>
+</dl>
+
+<h5 class="blog">ブログ毎の設定</h5>
+<hr/>
+<dl>
+	<dt>API key: API key</dt>
+	<dd>出力するページにマップを埋め込んだ場合に、このAPI keyが利用されます。<br/>
+	(MTの編集画面とブログを公開する場所で、ドメインが異なる場合に利用します)</dd>
+</dl>
+
+</div>
+
+</div>
