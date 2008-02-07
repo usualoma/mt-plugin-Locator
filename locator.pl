@@ -247,9 +247,8 @@ sub runner {
 
 sub load_tmpl_translated {
 	my ($plugin, $file) = @_;
-	my $fh;
-	open($fh, $file);
-	$plugin->translate_templatized(join('', <$fh>));
+	open(my $fh, $file);
+	$plugin->translate_templatized( do{ local $/; <$fh> } );
 }
 
 1;
