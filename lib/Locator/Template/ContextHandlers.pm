@@ -249,7 +249,8 @@ sub _hdlr_locator_google_map {
 	&$ctx_set_var('LocatorInfoWindow', $inner);
 
 	my $edit_map_tmpl = File::Spec->catdir($plugin->{full_path},'tmpl','tag_google_map.tmpl');
-	my $tmpl = do { open(my $fh, $edit_map_tmpl); local $/; <$fh> };
+	#my $tmpl = do { open(my $fh, $edit_map_tmpl); local $/; <$fh> };
+	my $tmpl = $plugin->load_tmpl_translated($edit_map_tmpl);
 	my $tmpl_token = $builder->compile($ctx, $tmpl);
 
 	$ctx->stash('locator_zoom', undef);

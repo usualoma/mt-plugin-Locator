@@ -16,7 +16,7 @@
 	id="location_address"
 	label="<__trans phrase="Address">"
 	hint="<__trans phrase="The address of the site associated with .">">
-	<input name="location_address" id="location_address" class="half-width" value="<mt:var name="location_address" escape="html">" />
+	<input name="location_address" id="location_address" class="full-width" value="<mt:var name="location_address" escape="html">" onchange="updateSearchFormField();"/>
 </mtapp:setting>
 </MTIfNonZero>
 
@@ -86,7 +86,10 @@ if (GBrowserIsCompatible()) {
 			map.getContainer().appendChild(container);
 
 			GEvent.addListener(map, 'zoomend', function(oz, nz) {
-				if ($('location_zoom_g').value != nz) {
+				if (
+					($('location_zoom_g').value != nz)
+					&& ($('location_zoom_g').value != '')
+				) {
 					uzw.style.display = '';
 				}
 				else {
@@ -119,7 +122,7 @@ if (GBrowserIsCompatible()) {
 
 			$('location_latitude_g').value = point.lat();
 			$('location_longitude_g').value = point.lng();
-			if ($('location_zoom_g').value === '') {
+			if ($('location_zoom_g').value == '') {
 				$('location_zoom_g').value = map.getZoom();
 			}
 
