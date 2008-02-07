@@ -258,6 +258,26 @@ sub _hdlr_locator_google_map {
 	$builder->build($ctx, $tmpl_token) or $ctx->error($builder->errstr);
 }
 
+sub _hdlr_locator_has_map {
+    my ($plugin, $ctx, $args, $cond) = @_;
+    my $builder = $ctx->stash('builder');
+    my $tokens = $ctx->stash('tokens');
+
+	my $loc = &__detect_location(@_);
+	if (! $loc) {
+		return 0;
+	}
+
+	my $lng = $loc->longitude_g;
+	my $lat = $loc->latitude_g;
+
+	if ((! $lng) || (! $lat)) {
+		return 0;
+	}
+
+	return 1;
+}
+
 sub _hdlr_locator_latitude_g {
     my ($plugin, $ctx, $args) = @_;
 	my $loc = &__detect_location(@_);

@@ -116,6 +116,7 @@ BEGIN {
 		'LocatorAddress' => '_hdlr_locator_address',
 	};
 	our $template_container_tags = {
+		'LocatorHasMap?' => '_hdlr_locator_has_map',
 		'LocatorGoogleMap' => '_hdlr_locator_google_map',
 	};
 }
