@@ -47,9 +47,9 @@ MT->add_plugin($plugin = __PACKAGE__->new({
 	schema_version  => $SCHEMA_VERSION,
 	description     => "<MT_TRANS phrase=\"location ties to the author/blog/entry.\">",
 	author_name     => "toi-planning",
-	author_link     => "http://www.toi-planning.net/",
-	plugin_link     => "http://www.toi-planning.net/mt/locator/",
-	doc_link        => "http://www.toi-planning.net/mt/locator/manual",
+	author_link     => "http://tec.toi-planning.net/",
+	plugin_link     => "http://tec.toi-planning.net/mt/locator/",
+	doc_link        => "http://tec.toi-planning.net/mt/locator/manual",
 	object_classes  => [ 'Locator::Location' ],
 	settings => new MT::PluginSettings([
 		['field_address', {Default => 2}],
