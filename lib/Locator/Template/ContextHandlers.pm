@@ -246,7 +246,8 @@ sub _hdlr_locator_google_map {
 
 	defined(my $inner = $builder->build($ctx, $tokens, $cond))
 		or return $ctx->error($builder->errstr);
-	$inner =~ s/\n//g;
+	#using encode_js="1"
+	#$inner =~ s/\n//g;
 	&$ctx_set_var('LocatorInfoWindow', $inner);
 
 	my $edit_map_tmpl = File::Spec->catdir($plugin->{full_path},'tmpl','tag_google_map.tmpl');
