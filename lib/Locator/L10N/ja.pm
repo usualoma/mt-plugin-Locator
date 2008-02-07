@@ -55,9 +55,9 @@ use vars qw( %Lexicon );
 	'for blog' => 'ブログ',
 	'for entry' => 'エントリー',
 	'Which blogs' => 'エントリーへの関連付けを有効にするブログ',
-	'GoogleMap API Key' => 'GoogleMapのAPIキー',
+	'GoogleMap API key' => 'GoogleMapのAPIキー',
 
-	'API Key(When this blog has specific key)' => 'API Key<br/>(このブログが独自にAPIキーを必要とする場合)',
+	'API key(When this blog has specific key)' => 'API key<br/>(このブログが独自にAPIキーを必要とする場合)',
 	'Map' => '地図',
 	'Address' => '住所',
 
