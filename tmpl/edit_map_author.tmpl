@@ -219,14 +219,12 @@ if (GBrowserIsCompatible()) {
 		var lat = '<mt:var name="location_latitude_g">';
 		var lng = '<mt:var name="location_longitude_g">';
 		var zoom = '<mt:var name="location_zoom_g">';
-		if (zoom === '') {
-			zoom = '<MT_TRANS phrase="Location default zoomlevel">';
-		}
 
 		if (lat && lng && (lat !== '0') && (lng !== '0')) {
 			var default_point = new GLatLng(lat,lng);
 		}
 		else {
+			zoom = '<MT_TRANS phrase="Location default zoomlevel">';
 			var default_point = new GLatLng(<MT_TRANS phrase="Location default latitude">,<MT_TRANS phrase="Location default longitude">);
 		}
 
