@@ -14,6 +14,9 @@
 <div id="locate_window" style="display: none; text-align: center;">
 <input type="button" value="<MT_TRANS phrase="Unset this location">"/>
 </div>
+<div id="location_results" style="display: none">
+</div>
+
 <div id="update_zoom_window" style="display: none; width: 150px; background: white;text-align: center;">
 <MT_TRANS phrase="Zoom has changed. Did you update zoom value?"><br/>
 <input type="button" value="<MT_TRANS phrase="update">"/>
@@ -47,7 +50,7 @@
 //<![CDATA[
 
 if (GBrowserIsCompatible()) {
-	(function() {
+	var locator_init_googlemap = function() {
 		function $(id) {
 			return document.getElementById(id);
 		}
@@ -101,7 +104,7 @@ if (GBrowserIsCompatible()) {
 			locate = new GMarker(
 				point,
 				{
-					icon: blueIcon,
+					icon: blueIcon
 				}
 			);
 			map.addOverlay(locate);
@@ -152,7 +155,7 @@ if (GBrowserIsCompatible()) {
 			});
 		}
 
-		function candidateLocationPoint(point, word) {
+		function candidateLocationPoint(point, word, return_info_window) {
 			if (cand) {
 				map.removeOverlay(cand);
 			}
@@ -162,16 +165,22 @@ if (GBrowserIsCompatible()) {
 			map.addOverlay(cand);
 
 			var cw = $('candidate_window').cloneNode(true);
+			var info_window = null;
 			if (word) {
 				var div = document.createElement('div');
 				div.style.textAlign = 'center';
 				div.innerHTML = word;
 				div.appendChild(cw);
-				cand.openInfoWindow(div);
+				info_window = div;
 			}
 			else {
-				cand.openInfoWindow(cw);
+				info_window = cw;
 			}
+
+			if (! return_info_window) {
+				cand.openInfoWindow(info_window);
+			}
+
 			cw.style.display = '';
 			var input = cw.getElementsByTagName('input')[0];
 			input.onclick = function() {
@@ -196,6 +205,8 @@ if (GBrowserIsCompatible()) {
 					cand.openInfoWindow(cw);
 				}
 			});
+
+			return info_window;
 		}
 
 		map = new GMap2(document.getElementById("location_map"));
@@ -221,7 +232,7 @@ if (GBrowserIsCompatible()) {
 		}
 
 		var options = {
-			//resultList : document.getElementById("location_results"),
+			resultList : document.getElementById("location_results"),
 			//searchFormHint : "Example Searches: Hotels in New York City",
 			//linkTarget : GSearch.LINK_TARGET_BLANK,
 			onGenerateMarkerHtmlCallback : onGenerateMarker,
@@ -237,8 +248,8 @@ if (GBrowserIsCompatible()) {
 
 		function onGenerateMarker(marker, html, result) {
 			map.removeOverlay(marker);
-			candidateLocationPoint(marker.getPoint(), local_search.searchForm.input.value);
-			return '';
+			var iw = candidateLocationPoint(marker.getPoint(), local_search.searchForm.input.value, true);
+			return iw;
 			/*
 			myStuff = document.createElement("div");
 			myStuff.innerHTML = "Bookmark This Result...";
@@ -280,7 +291,13 @@ if (GBrowserIsCompatible()) {
 			setInterval(updateSearchFormField, 2000);
 		}
 
-	})();
+	};
+	var locator_init_googlemap_onload = setInterval(function() {
+		if (window.app) {
+			clearInterval(locator_init_googlemap_onload);
+			locator_init_googlemap();
+		}
+	}, 200);
 }
 //]]>
 </script>

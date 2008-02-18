@@ -16,7 +16,9 @@
 	id="location_address"
 	label="<__trans phrase="Address">"
 	hint="<__trans phrase="The address of the site associated with .">">
+	<div class="textarea-wrapper">
 	<input name="location_address" id="location_address" class="full-width" value="<mt:var name="location_address" escape="html">" onchange="updateSearchFormField();"/>
+	</div>
 </mtapp:setting>
 </MTIfNonZero>
 
@@ -25,12 +27,16 @@
 	id="location_map"
 	label="<__trans phrase="Map">"
 	hint="<__trans phrase="The location of the site associated with .">">
+
 <div id="candidate_window" style="display: none; text-align: center;">
 <input type="button" value="<__trans phrase="Set this location">"/>
 </div>
 <div id="locate_window" style="display: none; text-align: center;">
 <input type="button" value="<__trans phrase="Unset this location">"/>
 </div>
+<div id="location_results" style="display: none">
+</div>
+
 <div id="update_zoom_window" style="display: none; width: 150px; background: white;text-align: center;">
 <__trans phrase="Zoom has changed. Did you update zoom value?"><br/>
 <input type="button" value="<__trans phrase="update">"/>
@@ -40,7 +46,7 @@
 <input name="location_longitude_g" type="hidden" id="location_longitude_g" value="<mt:var name="location_longitude_g">" />
 <input name="location_zoom_g" type="hidden" id="location_zoom_g" value="<mt:var name="location_zoom_g">" />
 
-<div id="location_map" class="full-with" style="height: 500px"></div>
+<div id="location_map" class="full-with" style="width: 585px; height: 500px"></div>
 
 <script
 	src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=<MTGoogleMapAPIKey/>"	type="text/javascript"
@@ -64,7 +70,7 @@
 //<![CDATA[
 
 if (GBrowserIsCompatible()) {
-	(function() {
+	var locator_init_googlemap = function() {
 		var locate = null;
 		var cand = null;
 		var map = null;
@@ -111,11 +117,11 @@ if (GBrowserIsCompatible()) {
 
 			var blueIcon = new GIcon(G_DEFAULT_ICON);
 			blueIcon.image = "http://www.google.com/intl/en_us/mapfiles/ms/micons/blue-dot.png";
-			blueIcon.iconSize = new GSize(33, 33);
+			blueIcon.iconSize = new GSize(32, 32);
 			locate = new GMarker(
 				point,
 				{
-					icon: blueIcon,
+					icon: blueIcon
 				}
 			);
 			map.addOverlay(locate);
@@ -166,7 +172,7 @@ if (GBrowserIsCompatible()) {
 			});
 		}
 
-		function candidateLocationPoint(point, word) {
+		function candidateLocationPoint(point, word, return_info_window) {
 			if (cand) {
 				map.removeOverlay(cand);
 			}
@@ -176,16 +182,21 @@ if (GBrowserIsCompatible()) {
 			map.addOverlay(cand);
 
 			var cw = $('candidate_window').cloneNode(true);
+			var info_window = null;
 			if (word) {
 				var div = document.createElement('div');
 				div.style.textAlign = 'center';
 				div.innerHTML = word;
 				div.appendChild(cw);
-				cand.openInfoWindow(div);
+				info_window = div;
 			}
 			else {
-				cand.openInfoWindow(cw);
+				info_window = cw;
 			}
+			if (! return_info_window) {
+				cand.openInfoWindow(info_window);
+			}
+
 			cw.style.display = '';
 			var input = cw.getElementsByTagName('input')[0];
 			input.onclick = function() {
@@ -210,6 +221,8 @@ if (GBrowserIsCompatible()) {
 					cand.openInfoWindow(cw);
 				}
 			});
+
+			return info_window;
 		}
 
 		map = new GMap2(document.getElementById("location_map"));
@@ -235,7 +248,7 @@ if (GBrowserIsCompatible()) {
 		}
 
 		var options = {
-			//resultList : document.getElementById("location_results"),
+			resultList : document.getElementById("location_results"),
 			//searchFormHint : "Example Searches: Hotels in New York City",
 			//linkTarget : GSearch.LINK_TARGET_BLANK,
 			onGenerateMarkerHtmlCallback : onGenerateMarker,
@@ -251,8 +264,8 @@ if (GBrowserIsCompatible()) {
 
 		function onGenerateMarker(marker, html, result) {
 			map.removeOverlay(marker);
-			candidateLocationPoint(marker.getPoint(), local_search.searchForm.input.value);
-			return '';
+			var iw = candidateLocationPoint(marker.getPoint(), local_search.searchForm.input.value, true);
+			return iw;
 			/*
 			myStuff = document.createElement("div");
 			myStuff.innerHTML = "Bookmark This Result...";
@@ -294,7 +307,13 @@ if (GBrowserIsCompatible()) {
 			setInterval(updateSearchFormField, 2000);
 		}
 
-	})();
+	};
+	var locator_init_googlemap_onload = setInterval(function() {
+		if (window.app) {
+			clearInterval(locator_init_googlemap_onload);
+			locator_init_googlemap();
+		}
+	}, 200);
 }
 //]]>
 </script>
