@@ -293,7 +293,7 @@ if (GBrowserIsCompatible()) {
 
 	};
 	var locator_init_googlemap_onload = setInterval(function() {
-		if (window.app) {
+		if (document.getElementById('copyright')) {
 			clearInterval(locator_init_googlemap_onload);
 			locator_init_googlemap();
 		}
