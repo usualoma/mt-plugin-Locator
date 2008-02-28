@@ -169,9 +169,9 @@ sub _hdlr_locator_google_map_mobile {
 		return '';
 	}
 
-	my ($pre, $post) = split(/\./, $lng);
+	my ($pre, $post) = split(/\./, $lng . '000000');
 	$lng = $pre . substr($post, 0, 6);
-	($pre, $post) = split(/\./, $lat);
+	($pre, $post) = split(/\./, $lat . '000000');
 	$lat = $pre . substr($post, 0, 6);
 
 	my $zm = int((19 - $loc->zoom_g + 1) * 17 / 20 + 0.5);
