@@ -28,7 +28,9 @@
 if (GBrowserIsCompatible()) {
 	(function() {
 		map = new GMap2(document.getElementById("<$MTGetVar name="LocatorMapID"$>"));
-		map.addControl(new GLargeMapControl());
+		<MTIf var="LocatorMapControl" ne="">
+		map.addControl(new <$MTGetVar name="LocatorMapControl"$>());
+		</MTIf>
 
 		var lat = '<$MTLocatorLatitude$>';
 		var lng = '<$MTLocatorLongitude$>';

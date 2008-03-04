@@ -123,10 +123,19 @@ sub post_save {
 	if ($field_address) {
 		$loc->address($q->param('location_address'));
 	}
+	else {
+		$loc->address('');
+	}
+
 	if ($field_map) {
 		$loc->latitude_g($q->param('location_latitude_g'));
 		$loc->longitude_g($q->param('location_longitude_g'));
 		$loc->zoom_g($q->param('location_zoom_g') || 0);
+	}
+	else {
+		$loc->latitude_g('');
+		$loc->longitude_g('');
+		$loc->zoom_g(0);
 	}
 
 	$loc->save or die $loc->errstr;

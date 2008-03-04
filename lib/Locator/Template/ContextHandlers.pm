@@ -234,11 +234,26 @@ sub _hdlr_locator_google_map {
 		}
 	}
 
+	my $map_control = 'GLargeMapControl';
+	if (defined($args->{'map_control'})) {
+		$map_control = $args->{'map_control'};
+	}
+	&$ctx_set_var('LocatorMapControl', $map_control);
+
 	&$ctx_set_var('LocatorMapID', $args->{id} || 'locator_map');
 	&$ctx_set_var('LocatorMapClass', $args->{lass} || '');
 	&$ctx_set_var('LocatorMapStyle', $args->{style} || '');
-	&$ctx_set_var('LocatorMapWidth', $args->{width} || '400px');
-	&$ctx_set_var('LocatorMapHeight', $args->{height} || '400px');
+
+	my $width = $args->{width} || '400px';
+	if ($width !~ m/px$/) {
+		$width .= 'px';
+	}
+	my $height = $args->{height} || '400px';
+	if ($height !~ m/px$/) {
+		$height .= 'px';
+	}
+	&$ctx_set_var('LocatorMapWidth', $width);
+	&$ctx_set_var('LocatorMapHeight', $height);
 
 	if (defined($args->{zoom})) {
 		$ctx->stash('locator_zoom', $args->{zoom});
@@ -248,6 +263,7 @@ sub _hdlr_locator_google_map {
 		or return $ctx->error($builder->errstr);
 	#using encode_js="1"
 	#$inner =~ s/\n//g;
+	$inner =~ s/^[\s\n]*$//;
 	&$ctx_set_var('LocatorInfoWindow', $inner);
 
 	my $edit_map_tmpl = File::Spec->catdir($plugin->{full_path},'tmpl','tag_google_map.tmpl');
