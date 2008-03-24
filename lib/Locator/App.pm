@@ -86,7 +86,10 @@ sub post_save {
 
 	require UNIVERSAL;
 	if (UNIVERSAL::isa($obj, 'MT::Blog')) {
-		if (! $blog_id) {
+		if (
+			(! $blog_id)
+			&& ((! $original) || (! $original->id))
+		) {
 			$plugin->set_config_value(
 				'enable_for_entry',
 				$plugin->get_config_value('enable_for_entry', 'system'),
