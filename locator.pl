@@ -86,6 +86,9 @@ MT->add_plugin($plugin = __PACKAGE__->new({
 		'MT::Entry::pre_save' => sub { runner('pre_save', 'app', @_); },
 		'MT::Entry::post_save' => sub { runner('post_save', 'app', @_); },
 
+		'MT::Page::pre_save' => sub { runner('pre_save', 'app', @_); },
+		'MT::Page::post_save' => sub { runner('post_save', 'app', @_); },
+
 		'MT::App::CMS::template_param.edit_blog' => sub { runner('_field_loop_param', 'app', @_); },
 		'MT::App::CMS::template_param.cfg_prefs' => sub { runner('_field_loop_param', 'app', @_); },
 		'MT::App::CMS::template_source.edit_blog' => sub { runner('_edit_blog', 'app', @_); },	

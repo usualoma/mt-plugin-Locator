@@ -141,6 +141,8 @@ sub post_save {
 		$loc->zoom_g(0);
 	}
 
+	die($loc->entry_id);
+
 	$loc->save or die $loc->errstr;
 }
 
@@ -151,6 +153,10 @@ sub _field_loop_param {
 	my $datasource = $q->param('_type');
 	my $id = $q->param('id') || ($datasource eq 'author' ? $q->param('author_id') : '');
 	my $perms = $app->{perms};
+
+	if ($datasource eq 'page') {
+		$datasource = 'entry';
+	}
 
 	my $data = undef;
 	if ($id) {
