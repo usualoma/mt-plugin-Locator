@@ -114,6 +114,11 @@ sub post_save {
 
 	require Locator::Location;
 	my $id_field = $datasource . '_id';
+	if (
+		($datasource eq 'blog') && ($app->param('_type') ne 'blog')
+	) {
+		return;
+	}
 	my $loc = Locator::Location->load({$id_field => $obj->id});
 	if (! $loc) {
 		$loc = Locator::Location->new;
@@ -140,8 +145,6 @@ sub post_save {
 		$loc->longitude_g('');
 		$loc->zoom_g(0);
 	}
-
-	die($loc->entry_id);
 
 	$loc->save or die $loc->errstr;
 }
