@@ -105,7 +105,7 @@ sub __detect_location {
 
 	require Locator::Location;
 
-	my $for = $args->{of};
+	my $for = $args->{of} || $ctx->stash('locator_google_map_of') || '';
 	if ((! $for) || ($for eq 'entry')) {
 		my $entry = $ctx->stash('entry');
 		if ($entry) {
@@ -210,6 +210,8 @@ sub _hdlr_locator_google_map {
     my $builder = $ctx->stash('builder');
     my $tokens = $ctx->stash('tokens');
 
+	local $ctx->{__stash}{locator_google_map_of} = $args->{of} || '';
+
 	my $loc = &__detect_location(@_);
 	if (! $loc) {
 		return '';
@@ -221,6 +223,7 @@ sub _hdlr_locator_google_map {
 	if ((! $lng) || (! $lat)) {
 		return '';
 	}
+
 
 	my $ctx_set_var;
 	if (MT->version_number >= 4) {
