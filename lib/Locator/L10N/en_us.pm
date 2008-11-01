@@ -35,6 +35,10 @@ use strict;
 
 use base 'Locator::L10N';
 use vars qw( %Lexicon );
-%Lexicon = ();
+%Lexicon = (
+	'Location default latitude' => '37.778773',
+	'Location default longitude' => '-122.397711',
+	'Location default zoomlevel' => '10',
+);
 
 1;
