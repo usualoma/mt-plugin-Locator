@@ -38,6 +38,10 @@ sub pre_save{
 	my $app = MT->instance;
 	my $datasource = $obj->datasource;
 
+	return if !($app->can('param')); # God knows where we'll be coming from!
+
+	return if !($app->param('locator_beacon'));
+
 	my $blog_id = $app->param('blog_id');
 	my $scope = $blog_id ? ('blog:' . $blog_id) : 'system';
 	if ($datasource ne 'entry') {
@@ -51,10 +55,6 @@ sub pre_save{
 		return;
 	}
 	
-	return if !($app->can('param')); # God knows where we'll be coming from!
-
-	return if !($app->param('locator_beacon'));
-
 	my $field_address = $plugin->get_config_value('field_address');
 	my $field_map = $plugin->get_config_value('field_map');
 
@@ -75,6 +75,11 @@ sub pre_save{
 sub post_save {
 	my ($plugin, $cb, $obj, $original) = @_;
 	my $app = MT->instance;
+
+	return if !($app->can('param')); # God knows where we'll be coming from!
+
+	return if !($app->param('locator_beacon'));
+
 	my $q = $app->{query};
 	my $blog_id = $q->param('blog_id');
 	my $datasource = $obj->datasource;
@@ -105,10 +110,6 @@ sub post_save {
 		return;
 	}
 	
-	return if !($app->can('param')); # God knows where we'll be coming from!
-
-	return if !($app->param('locator_beacon'));
-
 	my $field_address = $plugin->get_config_value('field_address');
 	my $field_map = $plugin->get_config_value('field_map');
 

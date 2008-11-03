@@ -42,6 +42,7 @@ our $SCHEMA_VERSION = '0.65';
 
 my $plugin;
 MT->add_plugin($plugin = __PACKAGE__->new({
+	id              => "Locator",
 	name            => "Locator",
 	version         => $VERSION,
 	schema_version  => $SCHEMA_VERSION,

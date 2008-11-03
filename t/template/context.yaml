@@ -1,0 +1,8 @@
+case1:
+    archive_type: Individual
+
+    __stash:
+        blog_id: 1
+        blog: ~
+        entry_id: 1
+        entry: ~

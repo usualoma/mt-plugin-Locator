@@ -1,0 +1,9 @@
+blog:1:
+    enable_for_entry: 1
+
+system:
+    enable_for_blog: 1
+    enable_for_author: 1
+    field_address: 2
+    field_map: 2
+    googlemap_api_key: abcdefg

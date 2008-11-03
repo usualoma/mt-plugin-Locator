@@ -1,0 +1,53 @@
+<div
+  id="locator_map"
+  class=""
+  style="width: 400px; height: 400px;"
+  ></div>
+
+<script
+  src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=abcdefg"     type="text/javascript"
+  >
+</script>
+
+<script
+  src="http://www.google.com/uds/api?file=uds.js&v=1.0&key=abcdefg"
+  type="text/javascript"
+  ></script>
+<script
+  src="http://www.google.com/uds/solutions/localsearch/gmlocalsearch.js"
+  type="text/javascript"
+  ></script>
+
+<style type="text/css">
+  @import url("http://www.google.com/uds/css/gsearch.css");
+  @import url("http://www.google.com/uds/solutions/localsearch/gmlocalsearch.css");
+</style>
+<script type="text/javascript">
+  //<![CDATA[
+
+if (GBrowserIsCompatible()) {
+  (function() {
+    map = new GMap2(document.getElementById("locator_map"));
+
+    map.addControl(new GLargeMapControl());
+
+
+    var lat = '1.1';
+    var lng = '2.2';
+    var zoom = '1"';
+    if (zoom === '') {
+      zoom = '10';
+    }
+
+    var default_point = new GLatLng(lat,lng);
+    var default_marker = new GMarker(default_point);
+
+    map.setCenter(default_point, parseInt(zoom));
+    map.addOverlay(default_marker)
+
+    default_marker.openInfoWindow('Content');
+
+  })();
+}
+//]]>
+</script>

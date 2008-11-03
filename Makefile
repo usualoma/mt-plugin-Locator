@@ -1,10 +1,10 @@
-VERSION=$(shell cat VERSION)
+VERSION=$(shell grep VERSION locator.pl | head -1 | sed "s/.* '//" | sed "s/'.*//")
 BASENAME=$(shell basename `pwd`)-${VERSION}
 
 PROJECT=$(shell svn info | grep ^URL | sed 's/.*:\/\///' | sed 's/\.googlecode\.com.*//')
 URL=$(shell svn info | grep ^URL | sed 's/.*URL: *//' | sed 's/\(\.googlecode\.com\/svn\/\).*/\1/')
 
-all: 
+all: test
 
 make_tag:
 	svn commit
@@ -21,3 +21,6 @@ dist:
 	rm -f /tmp/${BASENAME}/Makefile
 	tar zcf /tmp/${BASENAME}.tgz -C /tmp ${BASENAME}
 	(cd /tmp; zip -qr ${BASENAME}.zip ${BASENAME})
+
+test:
+	prove -Ilib -Iextlib -I../../lib -I../../extlib
