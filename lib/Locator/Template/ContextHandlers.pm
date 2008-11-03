@@ -162,6 +162,9 @@ sub _hdlr_locator_google_map_mobile {
 		return '';
 	}
 
+	my $hash = $plugin->get_config_hash();
+	my $apikey = $hash->{googlemap_api_key};
+
 	my $lng = $loc->longitude_g;
 	my $lat = $loc->latitude_g;
 
@@ -169,27 +172,21 @@ sub _hdlr_locator_google_map_mobile {
 		return '';
 	}
 
-	my ($pre, $post) = split(/\./, $lng . '000000');
-	$lng = $pre . substr($post, 0, 6);
-	($pre, $post) = split(/\./, $lat . '000000');
-	$lat = $pre . substr($post, 0, 6);
-
-	my $zm = int((19 - $loc->zoom_g + 1) * 17 / 20 + 0.5);
-	if (defined($args->{zoom})) {
-		$zm = $args->{zoom};
-	}
+    require MT;
+    my $app = MT->instance;
+    my $zoom = defined($args->{zoom})
+        ? $args->{zoom}
+        : $plugin->translate('Location default zoomlevel');
 
 	my $width = $args->{width} || '200';
 	my $height = $args->{height} || '200';
 
 	my $img = '<img src="' .
-	'http://maps.google.com/mapprint?' .
-	'&tstyp=4' . 
-	'&c=' . $lng . ',' . $lat .
-	"&r=$width,$height" .
-	#'&z=3' .
-	'&z=' . $zm .
-	'&l=' . $lng . ',' . $lat . ',' . 15 .
+	'http://maps.google.com/staticmap?center=' . $lat . ',' . $lng .
+	'&zoom=' . $zoom .
+    '&size=' . $width . 'x' . $height .
+    '&maptype=mobile' .
+    '&key=' . $apikey .
 	'"';
 
 	if ($args->{id}) {
