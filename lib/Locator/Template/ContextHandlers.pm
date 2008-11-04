@@ -188,9 +188,7 @@ sub _hdlr_locator_google_map_mobile {
 	}
 
     require MT;
-    my $zoom = defined($args->{zoom})
-        ? $args->{zoom}
-        : $plugin->translate('Location default zoomlevel');
+    my $zoom = $args->{zoom} || $ctx->stash('locator_zoom') || $loc->zoom_g || $plugin->translate('Location default zoomlevel');
 
 	my $width = $args->{width} || '200';
 	my $height = $args->{height} || '200';
