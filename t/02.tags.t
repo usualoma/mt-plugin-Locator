@@ -29,6 +29,7 @@ sub content {
 sub stuffs_blank {
 	my ($str) = @_;
 	$str =~ s/\s+/ /g;
+	$str =~ s/^\s*|\s*$//g;
 	$str;
 }
 
@@ -143,10 +144,10 @@ has map
 --- input
 <mt:LocatorGoogleMapMobile>
 --- expected
-<img src="http://maps.google.com/staticmap?center=1.1,2.2&zoom=10&size=200x200&maptype=mobile&key=abcdefg"/>
+<img src="http://maps.google.com/staticmap?center=1.1,2.2&zoom=1&size=200x200&maptype=mobile&key=abcdefg"/>
 
 === LocatorGoogleMap
 --- input
-<mt:LocatorGoogleMap>Content</mt:LocatorGoogleMap>
+<mt:LocatorGoogleMap>EntryID: <mt:EntryID></mt:LocatorGoogleMap>
 --- expected content stuffs_blank
 tag_LocatorGoogleMap.html

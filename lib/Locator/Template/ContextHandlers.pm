@@ -253,17 +253,15 @@ sub _hdlr_locator_google_map {
 	&$ctx_set_var('LocatorMapControl', $map_control);
 
 	&$ctx_set_var('LocatorMapID', $args->{id} || 'locator_map');
-	&$ctx_set_var('LocatorMapClass', $args->{lass} || '');
+	&$ctx_set_var('LocatorMapClass', $args->{class} || '');
 	&$ctx_set_var('LocatorMapStyle', $args->{style} || '');
 
-	my $width = $args->{width} || '400px';
-	if ($width !~ m/px$/) {
-		$width .= 'px';
-	}
+	my $width = $args->{width} || '400';
+	$width =~ s/(\d)$/$1px/;
+
 	my $height = $args->{height} || '400px';
-	if ($height !~ m/px$/) {
-		$height .= 'px';
-	}
+	$height =~ s/(\d)$/$1px/;
+
 	&$ctx_set_var('LocatorMapWidth', $width);
 	&$ctx_set_var('LocatorMapHeight', $height);
 
