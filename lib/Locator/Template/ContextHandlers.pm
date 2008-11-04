@@ -188,7 +188,6 @@ sub _hdlr_locator_google_map_mobile {
 	}
 
     require MT;
-    my $app = MT->instance;
     my $zoom = defined($args->{zoom})
         ? $args->{zoom}
         : $plugin->translate('Location default zoomlevel');
