@@ -164,6 +164,21 @@ sub _hdlr_locator_google_map_mobile {
 
 	my $hash = $plugin->get_config_hash();
 	my $apikey = $hash->{googlemap_api_key};
+	if (
+		$ctx->{current_archive_type} ||
+		$ctx->{archive_type} ||
+		$ctx->{inside_mt_categories}
+	) {
+		my $blog_id = $ctx->stash('blog_id');
+		if (! $blog_id) {
+			my $b = $ctx->stash('blog');
+			if ($b) {
+				$blog_id = $b->id;
+			}
+		}
+		my $hash = $plugin->get_config_hash('blog:' . $blog_id);
+		$apikey = $hash->{googlemap_api_key} || $apikey;
+	}
 
 	my $lng = $loc->longitude_g;
 	my $lat = $loc->latitude_g;
