@@ -199,6 +199,7 @@ sub _hdlr_locator_google_map_mobile {
     '&size=' . $width . 'x' . $height .
     '&maptype=mobile' .
     '&key=' . $apikey .
+	'&markers=' . $lat . ',' . $lng .
 	'"';
 
 	if ($args->{id}) {
