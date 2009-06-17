@@ -61,6 +61,8 @@ MT->add_plugin($plugin = __PACKAGE__->new({
 		['enable_for_blog', {Default => 1}],
 		['enable_for_entry', {Default => 1}],
 		['googlemap_api_key'],
+
+		['entry_placement', {Default => 1}],
 	]),
 	system_config_template =>
 		(MT->version_number >= 4 ) ?

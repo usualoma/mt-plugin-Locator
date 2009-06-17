@@ -79,6 +79,10 @@ use vars qw( %Lexicon );
 	'Zoom has changed. Did you update zoom value?' =>
 	'ズームが変更されました。この値で更新しますか？',
 	'update' => '更新',
+
+	'Insert into (for entry)' => '地図の表示位置(ブログ記事)',
+	'Under Text/More' => '本文の下',
+	'On Buttons' => '保存ボタンの上',
 );
 
 1;

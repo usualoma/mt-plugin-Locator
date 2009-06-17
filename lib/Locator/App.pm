@@ -212,12 +212,20 @@ sub _edit_entry {
 
 	if (MT->version_number >= 4 ) {
 		my $edit_map_tmpl = File::Spec->catdir($plugin->{full_path},'tmpl','edit_map_entry.tmpl');
-		
-		$old = '<mt:include name="include/editor.tmpl">';
+
+		my $placement =
+			$plugin->get_config_value('entry_placement', 'system')
+			|| $plugin->get_config_value('entry_placement', 'blog:' . $blog_id)
+			|| 1;
+		$old = (
+			'(<mt:include name="include/editor.tmpl">)()',
+			'()(<mt:include\s*name="include/actions_bar.tmpl"\s*bar_position="bottom")',
+		)[$placement-1];
+
 	#	$old = quotemeta($old);
 		$new = $plugin->load_tmpl_translated($edit_map_tmpl);
 
-		$$tmpl =~ s/($old)/$1\n$new\n/;
+		$$tmpl =~ s/$old/$1\n$new\n$2/;
 	}
 	else {
 		my $edit_map_tmpl = File::Spec->catdir($plugin->{full_path},'tmpl','edit_map_entry_33.tmpl');

@@ -96,6 +96,22 @@
 </mtapp:setting>
 </div>
 
+<mtapp:setting
+	id="entry_placement"
+	label="<__trans phrase="Insert into (for entry)">"
+>
+
+<ul>
+<li>
+<select name="entry_placement" id="entry_placement">
+<option value="1" <mt:If name="entry_placement" eq="1">selected="selected"</mt:If>><__trans phrase="Under Text/More" /></option>
+<option value="2" <mt:If name="entry_placement" eq="2">selected="selected"</mt:If>><__trans phrase="On Buttons" /></option>
+</select>
+</li>
+</ul>
+
+</mtapp:setting>
+
 
 <mtapp:setting
 	id="apikey"
