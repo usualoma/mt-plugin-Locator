@@ -109,8 +109,12 @@ sub __detect_location {
 	if ((! $for) || ($for eq 'entry')) {
 		my $entry = $ctx->stash('entry');
 		if ($entry) {
-			my $loc = Locator::Location->load({'entry_id' => $entry->id});
-			if (! $loc) {
+			my $loc = $entry;
+			if (MT->version_number < 5) {
+				$loc = Locator::Location->load({'entry_id' => $entry->id});
+			}
+
+			if (! $loc || $plugin->is_empty($loc)) {
 				return 0;
 			}
 			return $loc;
@@ -123,15 +127,20 @@ sub __detect_location {
 
 	if ((! $for) || ($for eq 'blog')) {
 		my $blog_id = $ctx->stash('blog_id');
+		my $blog = $ctx->stash('blog');
 		if (! $blog_id) {
-			my $b = $ctx->stash('blog');
-			if ($b) {
-				$blog_id = $b->id;
+			if ($blog) {
+				$blog_id = $blog->id;
 			}
 		}
 		if ($blog_id) {
-			my $loc = Locator::Location->load({'blog_id' => $blog_id});
-			if (! $loc) {
+			my $blog = $blog || MT::Blog->load($blog_id);
+			my $loc = $blog;
+			if (MT->version_number < 5) {
+				$loc = Locator::Location->load({'blog_id' => $blog_id});
+			}
+
+			if (! $loc || $plugin->is_empty($loc)) {
 				return 0;
 			}
 			return $loc;
@@ -144,8 +153,12 @@ sub __detect_location {
 
 	my $author = $ctx->stash('author');
 	if ($author) {
-		my $loc = Locator::Location->load({'author_id' => $author->id});
-		if (! $loc) {
+		my $loc = $author;
+		if (MT->version_number < 5) {
+			$loc = Locator::Location->load({'author_id' => $author->id});
+		}
+
+		if (! $loc || $plugin->is_empty($loc)) {
 			return 0;
 		}
 		return $loc;

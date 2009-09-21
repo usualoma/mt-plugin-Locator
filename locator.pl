@@ -38,7 +38,7 @@ use MT 3.3;   # requires MT 3.3 or later
 
 use base 'MT::Plugin';
 our $VERSION = '0.5.6';
-our $SCHEMA_VERSION = '0.65';
+our $SCHEMA_VERSION = '0.72';
 
 my $plugin;
 MT->add_plugin($plugin = __PACKAGE__->new({
@@ -149,10 +149,70 @@ sub init_registry {
 		};
 	}
 
+	if (MT->version_number >= 5) {
+		my $types = {
+			'address' => {
+				type => 'string',
+				size => 255,
+				not_null => 0,
+				revisioned => 1,
+			},
+			'zoom_g' => {
+				type => 'smallint',
+				not_null => 0,
+				revisioned => 1,
+			},
+			'latitude_g' => {
+				type => 'string',
+				size => 255,
+				not_null => 0,
+				revisioned => 1,
+			},
+			'longitude_g' => {
+				type => 'string',
+				size => 255,
+				not_null => 0,
+				revisioned => 1,
+			},
+		};
+		$hash->{object_classes} = [];
+		$hash->{object_types} = {
+			'entry' => $types,
+			'blog' => $types,
+			'author' => $types,
+		};
+	}
+
 	require MT;
 	my $app = MT->instance;
-	if(! $app->isa('MT::App::Upgrader')) {
+	if ($app->isa('MT::App::Upgrader')) {
+		if (MT->version_number >= 5) {
+			$plugin->registry($hash);
+		}
+	}
+	else {
 		$plugin->registry($hash);
+	}
+}
+
+sub init_app {
+	my $app = shift;
+	if (MT->version_number >= 5) {
+		if(! $app->isa('MT::App::Upgrader')) {
+			no warnings 'redefine';
+			my $load = \&MT::BasicAuthor::load;
+			*MT::BasicAuthor::load = sub {
+				$_[2] ||= {};
+				$_[2]->{'fetchonly'} = [
+					'id', 'name', 'nickname', 'password', 'type', 'email', 'url',
+					'public_key', 'preferred_language', 'api_password',
+					'remote_auth_username', 'remote_auth_token', 'entry_prefs',
+					'text_format', 'status', 'external_id',
+				];
+
+				MT::Object::load(@_);
+			};
+		}
 	}
 }
 
@@ -259,6 +319,17 @@ sub load_tmpl_translated {
 	my ($plugin, $file) = @_;
 	open(my $fh, $file);
 	$plugin->translate_templatized( do{ local $/; <$fh> } );
+}
+
+sub is_empty {
+	my $plugin = shift;
+	my ($obj) = @_;
+	foreach my $k ('address', 'latitude_g', 'longitude_g', 'zoom_g') {
+		if ($obj->$k) {
+			return 0;
+		}
+	}
+	return 1;
 }
 
 1;

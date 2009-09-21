@@ -70,9 +70,26 @@ sub pre_save{
 		$app->{no_print_body} = 1;
 		exit();
 	}
+
+	if (MT->version_number >= 5) {
+		&save_data(@_);
+	}
 }
 
 sub post_save {
+	my ($plugin, $cb, $obj, $original) = @_;
+	my $app = MT->instance;
+
+	return if !($app->can('param')); # God knows where we'll be coming from!
+
+	return if !($app->param('locator_beacon'));
+
+	if (MT->version_number < 5) {
+		&save_data(@_);
+	}
+}
+
+sub save_data {
 	my ($plugin, $cb, $obj, $original) = @_;
 	my $app = MT->instance;
 
@@ -120,13 +137,17 @@ sub post_save {
 	) {
 		return;
 	}
-	my $loc = Locator::Location->load({$id_field => $obj->id});
-	if (! $loc) {
-		$loc = Locator::Location->new;
-		$loc->blog_id(0);
-		$loc->author_id(0);
-		$loc->entry_id(0);
-		$loc->$id_field($obj->id);
+
+	my $loc = $obj;
+	if (MT->version_number < 5) {
+		$loc = Locator::Location->load({$id_field => $obj->id});
+		if (! $loc) {
+			$loc = Locator::Location->new;
+			$loc->blog_id(0);
+			$loc->author_id(0);
+			$loc->entry_id(0);
+			$loc->$id_field($obj->id);
+		}
 	}
 
 	if ($field_address) {
@@ -147,7 +168,9 @@ sub post_save {
 		$loc->zoom_g(0);
 	}
 
-	$loc->save or die $loc->errstr;
+	if (MT->version_number < 5) {
+		$loc->save or die $loc->errstr;
+	}
 }
 
 sub _field_loop_param {
@@ -162,10 +185,27 @@ sub _field_loop_param {
 		$datasource = 'entry';
 	}
 
-	my $data = undef;
-	if ($id) {
-		require Locator::Location;
-		$data = Locator::Location->load({$datasource . '_id' => $id});
+	{
+		my $found = 0;
+		foreach my $key ('address', 'latitude_g', 'longitude_g', 'zoom_g') {
+			if ($param->{$key}) {
+				$found = 1;
+				$param->{'location_' . $key} = $param->{$key};
+			}
+		}
+		return if $found;
+	}
+
+	my $data;
+	if (MT->version_number >= 5) {
+		my $class = MT->model($q->param('_type'));
+		$data = $class->load($id);
+	}
+	else {
+		if ($id) {
+			require Locator::Location;
+			$data = Locator::Location->load({$datasource . '_id' => $id});
+		}
 	}
 
 	foreach my $key ('address', 'latitude_g', 'longitude_g', 'zoom_g') {
