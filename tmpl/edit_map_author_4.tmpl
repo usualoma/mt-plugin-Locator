@@ -17,7 +17,7 @@
 	label="<__trans phrase="Address">"
 	hint="<__trans phrase="The address of the site associated with .">">
 	<div class="textarea-wrapper">
-	<input type="text" name="location_address" id="location_address" class="full-width" value="<mt:var name="location_address" escape="html">" onchange="updateSearchFormField();"/>
+	<input name="location_address" id="location_address" class="full-width" value="<mt:var name="location_address" escape="html">" onchange="updateSearchFormField();"/>
 	</div>
 </mtapp:setting>
 </MTIfNonZero>
@@ -70,11 +70,6 @@
 //<![CDATA[
 
 if (GBrowserIsCompatible()) {
-jQuery(function() {
-	function $(id) {
-		return jQuery('#' . id).get(0);
-	};
-
 	var locator_init_googlemap = function() {
 		var locate = null;
 		var cand = null;
@@ -85,29 +80,30 @@ jQuery(function() {
 		updateZoomValue.prototype = new GControl();
 
 		updateZoomValue.prototype.initialize = function(map) {
-			var container = jQuery('<div />');
+			var container = document.createElement("div");
 
-			var uzw = jQuery('#update_zoom_window');
-			uzw.find('input').click(function() {
-				jQuery('#location_zoom_g').val(map.getZoom());
-				uzw.hide();
-			});
-			container.append(uzw);
-			jQuery(map.getContainer()).append(container);
+			var uzw = $('update_zoom_window');
+			var input = uzw.getElementsByTagName('input')[0];
+			input.onclick = function() {
+				$('location_zoom_g').value = map.getZoom();
+				uzw.style.display = 'none';
+			};
+			container.appendChild(uzw);
+			map.getContainer().appendChild(container);
 
 			GEvent.addListener(map, 'zoomend', function(oz, nz) {
 				if (
 					($('location_zoom_g').value != nz)
 					&& ($('location_zoom_g').value != '')
 				) {
-					uzw.show();
+					uzw.style.display = '';
 				}
 				else {
-					uzw.hide();
+					uzw.style.display = 'none';
 				}
 			});
 
-			return container.get(0);
+			return container;
 		}
 
 		updateZoomValue.prototype.getDefaultPosition = function() {
@@ -120,13 +116,8 @@ jQuery(function() {
 			}
 
 			var blueIcon = new GIcon(G_DEFAULT_ICON);
-			blueIcon.image = "http://maps.google.com/mapfiles/ms/icons/blue-dot.png";
-			blueIcon.shadow = "http://maps.google.com/mapfiles/ms/icons/msmarker.shadow.png";
+			blueIcon.image = "http://www.google.com/intl/en_us/mapfiles/ms/micons/blue-dot.png";
 			blueIcon.iconSize = new GSize(32, 32);
-			blueIcon.shadowSize = new GSize(59, 32);
-			blueIcon.iconAnchor = new GPoint(14, 32);
-			blueIcon.infoWindowAnchor = new GPoint(16, 9);
-
 			locate = new GMarker(
 				point,
 				{
@@ -135,13 +126,13 @@ jQuery(function() {
 			);
 			map.addOverlay(locate);
 
-			jQuery('#location_latitude_g').val(point.lat());
-			jQuery('#location_longitude_g').val(point.lng());
-			if (jQuery('#location_zoom_g').val() == '') {
-				jQuery('#location_zoom_g').val(map.getZoom());
+			$('location_latitude_g').value = point.lat();
+			$('location_longitude_g').value = point.lng();
+			if ($('location_zoom_g').value == '') {
+				$('location_zoom_g').value = map.getZoom();
 			}
 
-			var lw = jQuery('#locate_window').clone(true).get(0);
+			var lw = $('locate_window').cloneNode(true);
 			if (word) {
 				var div = document.createElement('div');
 				div.style.textAlign = 'center';
@@ -156,9 +147,9 @@ jQuery(function() {
 			var input = lw.getElementsByTagName('input')[0];
 			input.onclick = function() {
 				if (window.confirm('<__trans phrase="Unset this location OK?">')) {
-					jQuery('#location_latitude_g').val(0);
-					jQuery('#location_longitude_g').val(0);
-					//jQuery('#location_zoom_g').val('');
+					$('location_latitude_g').value = 0;
+					$('location_longitude_g').value = 0;
+					//$('location_zoom_g').value = '';
 					map.removeOverlay(locate);
 				}
 			};
@@ -190,7 +181,7 @@ jQuery(function() {
 			cand = new GMarker(point);
 			map.addOverlay(cand);
 
-			var cw = jQuery('#candidate_window').clone(true).get(0);
+			var cw = $('candidate_window').cloneNode(true);
 			var info_window = null;
 			if (word) {
 				var div = document.createElement('div');
@@ -303,11 +294,11 @@ jQuery(function() {
 
 
 		var loc_addr_value = '';
-		var loc_addr = jQuery('#location_address');
+		var loc_addr = $('location_address');
 		function updateSearchFormField() {
-			if (loc_addr.val() && (loc_addr_value != loc_addr.value)) {
+			if (loc_addr.value && (loc_addr_value != loc_addr.value)) {
 				loc_addr_value = local_search.searchForm.input.value =
-					loc_addr.val();
+					loc_addr.value;
 //				local_search.searchForm.searchButton.click();
 			}
 		}
@@ -317,9 +308,12 @@ jQuery(function() {
 		}
 
 	};
-
-	locator_init_googlemap();
-});
+	var locator_init_googlemap_onload = setInterval(function() {
+		if (window.app) {
+			clearInterval(locator_init_googlemap_onload);
+			locator_init_googlemap();
+		}
+	}, 200);
 }
 //]]>
 </script>

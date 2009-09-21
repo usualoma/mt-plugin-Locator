@@ -176,6 +176,17 @@ sub _field_loop_param {
 	);
 }
 
+sub _edit_map_author_tmpl {
+	my $plugin = shift;
+	my $version = MT->version_number;
+	if ($version < 5) {
+		File::Spec->catdir($plugin->{full_path},'tmpl','edit_map_author_4.tmpl');
+	}
+	else {
+		File::Spec->catdir($plugin->{full_path},'tmpl','edit_map_author.tmpl');
+	}
+}
+
 sub _edit_blog {
 	my ($plugin, $cb, $app, $tmpl) = @_;
 	my ($old, $new);
@@ -187,7 +198,7 @@ sub _edit_blog {
 	
 	#_add_defaults($plugin, $app, $tmpl);
 
-	my $edit_map_tmpl = File::Spec->catdir($plugin->{full_path},'tmpl','edit_map_author.tmpl');
+	my $edit_map_tmpl = &_edit_map_author_tmpl($plugin);
 	
 	$old = '<mt:setvarblock name="action_buttons">';
 #	$old = quotemeta($old);
@@ -210,8 +221,12 @@ sub _edit_entry {
 	
 	#_add_defaults($plugin, $app, $tmpl);
 
-	if (MT->version_number >= 4 ) {
+	my $version = MT->version_number;
+	if ($version >= 4 ) {
 		my $edit_map_tmpl = File::Spec->catdir($plugin->{full_path},'tmpl','edit_map_entry.tmpl');
+		if ($version < 5) {
+			$edit_map_tmpl = File::Spec->catdir($plugin->{full_path},'tmpl','edit_map_entry_4.tmpl');
+		}
 
 		my $placement =
 			$plugin->get_config_value('entry_placement', 'system')
@@ -248,7 +263,7 @@ sub _edit_author {
 	
 	#_add_defaults($plugin, $app, $tmpl);
 
-	my $edit_map_tmpl = File::Spec->catdir($plugin->{full_path},'tmpl','edit_map_author.tmpl');
+	my $edit_map_tmpl = &_edit_map_author_tmpl($plugin);
 	
 	$old = '<fieldset>[\s\n]*<h3><__trans phrase="Preferences"></h3>';
 	$old2 = '<h3><__trans phrase="New User Defaults"></h3>';
