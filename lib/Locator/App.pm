@@ -186,12 +186,16 @@ sub _field_loop_param {
 	}
 
 	{
+		my %cols = (
+			address => '',
+			latitude_g => '',
+			longitude_g => '',
+			zoom_g => 10
+		);
 		my $found = 0;
-		foreach my $key ('address', 'latitude_g', 'longitude_g', 'zoom_g') {
-			if ($param->{$key}) {
-				$found = 1;
-				$param->{'location_' . $key} = $param->{$key};
-			}
+		foreach my $key (keys %cols) {
+			$found = $found || $param->{$key} || '';
+			$param->{'location_' . $key} = $param->{$key} || $cols{$key};
 		}
 		return if $found;
 	}
