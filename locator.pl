@@ -37,7 +37,7 @@ use 5.006;    # requires Perl 5.6.x
 use MT 3.3;   # requires MT 3.3 or later
 
 use base 'MT::Plugin';
-our $VERSION = '0.6.0';
+our $VERSION = '0.6.1';
 our $SCHEMA_VERSION = '0.72';
 
 my $plugin;
