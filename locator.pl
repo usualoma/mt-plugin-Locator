@@ -56,14 +56,24 @@ MT->add_plugin($plugin = __PACKAGE__->new({
 		['field_address', {Default => 2}],
 		['field_map', {Default => 2}],
 		['field_zoom', {Default => 1}],
+		['show_latlng', {Default => 0}],
 
 		['enable_for_author', {Default => 1}],
 		['enable_for_blog', {Default => 1}],
+		['enable_for_page', {Default => 1}],
 		['enable_for_entry', {Default => 1}],
+
 		['googlemap_api_key'],
+		['googlemap_client_id'],
+		['googlemap_crypto_key'],
 
 		['entry_placement', {Default => 1}],
 	]),
+    config_settings => {
+        LocatorIsPremier => {
+            default => 0,
+        },
+    },
 	system_config_template =>
 		(MT->version_number >= 4 ) ?
 			'locator_system_config.tmpl' : 'locator_system_config_33.tmpl',
@@ -71,13 +81,17 @@ MT->add_plugin($plugin = __PACKAGE__->new({
 		(MT->version_number >= 4 ) ?
 			'locator_blog_config.tmpl' : 'locator_blog_config_33.tmpl',
 	callbacks => {
+        'MT::App::CMS::cms_pre_preview' => sub { runner('cms_pre_preview', 'app', @_); },
+        (   map {
+                my $type = $_;
+                (   "MT::App::CMS::cms_save_filter.$type" =>
+                        sub { runner( 'cms_save_filter', 'app', $type, @_ ); }
+                    )
+                } qw(entry page author blog)
+            ),
+
 		'MT::App::CMS::template_param.edit_author' => sub { runner('_field_loop_param', 'app', @_); },
 		'MT::App::CMS::template_source.edit_author' => sub { runner('_edit_author', 'app', @_); },	
-
-		# not to use
-		#'MT::App::CMS::template_param.cfg_system_users' => sub { runner('_field_loop_param', 'app', @_); },
-		#'MT::App::CMS::template_source.cfg_system_users' => sub { runner('_edit_author', 'app', @_); },	
-
 		'MT::Author::pre_save' => sub { runner('pre_save', 'app', @_); },	
 		'MT::Author::post_save' => sub { runner('post_save', 'app', @_); },		
 
@@ -111,8 +125,11 @@ BEGIN {
 		'LocatorEnableForAuthor' => '_hdlr_locator_enable_for',
 		'LocatorEnableForBlog' => '_hdlr_locator_enable_for',
 		'LocatorEnableForEntry' => '_hdlr_locator_enable_for',
+		'LocatorEnableForPage' => '_hdlr_locator_enable_for',
 
 		'GoogleMapAPIKey' => '_hdlr_googlemap_api_key',
+		'GoogleMapClientID' => '_hdlr_googlemap_client_id',
+		'GoogleMapCryptoKey' => '_hdlr_googlemap_crypto_key',
 
 		'LocatorGoogleMapMobile' => '_hdlr_locator_google_map_mobile',
 
@@ -124,6 +141,7 @@ BEGIN {
 	our $template_container_tags = {
 		'LocatorHasMap?' => '_hdlr_locator_has_map',
 		'LocatorGoogleMap' => '_hdlr_locator_google_map',
+		'LocatorIsPremier?' => '_hdlr_locator_is_premier',
 	};
 }
 
@@ -295,6 +313,24 @@ sub save_config {
 			
 			$plugin->set_config_value(
 				'enable_for_entry', $enable_for_entry, 'blog:' . $b->id
+			);
+
+
+			my $enable_for_page;
+			if ($args->{'enable_for_page_' . $b->id}) {
+				$enable_for_page = $args->{enable_for_page} && 1;
+			}
+			else {
+				$enable_for_page = 0;
+			}
+
+			if (MT->version_number < 4 ) {
+				#always enabled
+				$enable_for_page = 1;
+			}
+
+			$plugin->set_config_value(
+				'enable_for_page', $enable_for_page, 'blog:' . $b->id
 			);
 		}
 	}

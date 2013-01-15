@@ -7,7 +7,7 @@ function locator_fetch_plugin_config($scope = 'system') {
 	}
 
 	global $mt;
-	$configs[$scope] = $mt->db->fetch_plugin_config('Locator', $scope);
+	$configs[$scope] = $mt->db()->fetch_plugin_config('Locator', $scope);
 
 	return $configs[$scope];
 }
@@ -27,20 +27,13 @@ function locator_fetch_plugin_config_value(
 	}
 }
 
-function locator_fetch_location($args) {
-	global $mt;
-	$db =& $mt->db;
+function set_locator_column($obj) {
+    foreach (array('latitude_g', 'longitude_g', 'zoom_g', 'address') as $k) {
+        $k_with_p = $obj->_prefix . $k;
+        $obj->$k = $obj->$k_with_p;
+    }
 
-	$where = array();
-	foreach (array('entry', 'blog', 'author') as $k) {
-		if (! empty($args[$k . '_id'])) {
-			$where[] = 'location_' . $k . '_id = ' . $args[$k . '_id'];
-		}
-	}
-
-	$sql = 'SELECT * FROM mt_location WHERE 1 AND ' . join(' AND ', $where);
-	$res = $db->get_results($sql, ARRAY_A);
-	return $res;
+    return $obj;
 }
 
 function locator_detect_location(&$args, &$ctx) {
@@ -55,40 +48,26 @@ function locator_detect_location(&$args, &$ctx) {
 	if ((! $for) || ($for == 'entry')) {
 		$entry = $ctx->stash('entry');
 		if ($entry) {
-			$loc = locator_fetch_location(array('entry_id' => $entry['entry_id']));
-			if (! $loc) {
-				return null;
-			}
-			return $loc[0];
+            return set_locator_column($entry);
 		}
-
-		if ($for == 'entry') {
+		else if ($for == 'entry') {
 			return null;
 		}
 	}
 
 	if ((! $for) || ($for == 'blog')) {
-		$blog_id = $ctx->stash('blog_id');
-		if ($blog_id) {
-			$loc = locator_fetch_location(array('blog_id' => $blog_id));
-			if (! $loc) {
-				return null;
-			}
-			return $loc[0];
+		$blog = $ctx->stash('blog');
+		if ($blog) {
+            return set_locator_column($blog);
 		}
-
-		if ($for == 'blog') {
+		else if ($for == 'blog') {
 			return null;
 		}
 	}
 
 	$author = $ctx->stash('author');
 	if ($author) {
-		$loc = locator_fetch_location(array('author_id' => $author['author_id']));
-		if (! $loc) {
-			return null;
-		}
-		return $loc[0];
+		return set_locator_column($author);
 	}
 	else {
 		return null;

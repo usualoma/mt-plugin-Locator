@@ -47,7 +47,7 @@ sub _hdlr_locator_enable_for {
 	$type =~ s/mtlocatorenablefor//;
 
 	my $hash;
-	if ($blog_id && ($type eq 'entry')) {
+	if ($blog_id && ($type eq 'entry' || $type eq 'page')) {
 		$hash = $plugin->get_config_hash('blog:' . $blog_id);
 	}
 	else {
@@ -75,11 +75,11 @@ sub _hdlr_locator_field {
 	return $hash->{'field_' . $type} || 0;
 }
 
-sub _hdlr_googlemap_api_key {
-    my ($plugin, $ctx, $args) = @_;
+sub _hdlr_config_key {
+    my ($key, $plugin, $ctx, $args) = @_;
 
 	my $hash = $plugin->get_config_hash();
-	my $apikey = $hash->{googlemap_api_key};
+	my $key = $hash->{$key};
 
 	if (
 		$ctx->{current_archive_type} ||
@@ -94,10 +94,25 @@ sub _hdlr_googlemap_api_key {
 			}
 		}
 		my $hash = $plugin->get_config_hash('blog:' . $blog_id);
-		$apikey = $hash->{googlemap_api_key} || $apikey;
+		$key = $hash->{$key} || $key;
 	}
 
-	return $apikey;
+	return $key;
+}
+
+sub _hdlr_googlemap_api_key {
+    my ($plugin, $ctx, $args) = @_;
+    _hdlr_config_key('googlemap_api_key', @_);
+}
+
+sub _hdlr_googlemap_client_id {
+    my ($plugin, $ctx, $args) = @_;
+    _hdlr_config_key('googlemap_client_id', @_);
+}
+
+sub _hdlr_googlemap_crypto_key {
+    my ($plugin, $ctx, $args) = @_;
+    _hdlr_config_key('googlemap_crypto_key', @_);
 }
 
 sub __detect_location {
@@ -168,6 +183,44 @@ sub __detect_location {
 	}
 }
 
+# http://adiary.blog.abk.nu/0274
+sub hmac_sha1 {
+    # my $self = shift;
+    my ( $key, $msg ) = @_;
+    my $sha1;
+
+    if ($Digest::SHA::PurePerl::VERSION) {
+        $sha1 = Digest::SHA::PurePerl->new(1);
+    }
+    else {
+        eval {
+            require Digest::SHA1;
+            $sha1 = Digest::SHA1->new;
+        };
+        if ($@) {
+            require Digest::SHA::PurePerl;
+            $sha1 = Digest::SHA::PurePerl->new(1);
+        }
+    }
+
+    my $bs = 64;
+    if ( length($key) > $bs ) {
+        $key = $sha1->add($key)->digest;
+        $sha1->reset;
+    }
+    my $k_opad = $key ^ ( "\x5c" x $bs );
+    my $k_ipad = $key ^ ( "\x36" x $bs );
+    $sha1->add($k_ipad);
+    $sha1->add($msg);
+    my $hk_ipad = $sha1->digest;
+    $sha1->reset;
+    $sha1->add( $k_opad, $hk_ipad );
+
+    my $b64d = $sha1->b64digest;
+    $b64d = substr( $b64d . '====', 0, ( ( length($b64d) + 3 ) >> 2 ) << 2 );
+    return $b64d;
+}
+
 sub _hdlr_locator_google_map_mobile {
     my ($plugin, $ctx, $args) = @_;
 	my $loc = &__detect_location(@_);
@@ -176,7 +229,7 @@ sub _hdlr_locator_google_map_mobile {
 	}
 
 	my $hash = $plugin->get_config_hash();
-	my $apikey = $hash->{googlemap_api_key};
+	my $client_id = $hash->{googlemap_client_id};
 	if (
 		$ctx->{current_archive_type} ||
 		$ctx->{archive_type} ||
@@ -190,7 +243,24 @@ sub _hdlr_locator_google_map_mobile {
 			}
 		}
 		my $hash = $plugin->get_config_hash('blog:' . $blog_id);
-		$apikey = $hash->{googlemap_api_key} || $apikey;
+		$client_id = $hash->{googlemap_client_id} || $client_id;
+	}
+
+	my $crypto_key = $hash->{googlemap_crypto_key};
+	if (
+		$ctx->{current_archive_type} ||
+		$ctx->{archive_type} ||
+		$ctx->{inside_mt_categories}
+	) {
+		my $blog_id = $ctx->stash('blog_id');
+		if (! $blog_id) {
+			my $b = $ctx->stash('blog');
+			if ($b) {
+				$blog_id = $b->id;
+			}
+		}
+		my $hash = $plugin->get_config_hash('blog:' . $blog_id);
+		$crypto_key = $hash->{googlemap_crypto_key} || $crypto_key;
 	}
 
 	my $lng = $loc->longitude_g;
@@ -205,27 +275,35 @@ sub _hdlr_locator_google_map_mobile {
 
 	my $width = $args->{width} || '200';
 	my $height = $args->{height} || '200';
+	my $maptype = $args->{maptype} || 'roadmap';
+	my $protocol = $args->{protocol} || 'http';
 
-	my $img = '<img src="' .
-	'http://maps.google.com/staticmap?center=' . $lat . ',' . $lng .
-	'&zoom=' . $zoom .
-    '&size=' . $width . 'x' . $height .
-    '&maptype=mobile' .
-    '&key=' . $apikey .
-	'&markers=' . $lat . ',' . $lng .
-	'"';
+    my $portion_to_sign =
+        '/maps/api/staticmap?' .
+        'sensor=false' .
+        ($client_id ? ('&client=' . $client_id) : '') .
+        '&center=' . $lat . ',' . $lng .
+	    '&zoom=' . $zoom .
+        '&size=' . $width . 'x' . $height .
+        '&maptype=' . $maptype .
+	    '&markers=' . $lat . ',' . $lng;
 
 	if ($args->{id}) {
-		$img .= ' id="' . $args->{id} . '"';
+		$portion_to_sign .= ' id="' . $args->{id} . '"';
 	}
 	if ($args->{class}) {
-		$img .= ' class="' . $args->{class} . '"';
+		$portion_to_sign .= ' class="' . $args->{class} . '"';
 	}
 	if ($args->{style}) {
-		$img .= ' style="' . $args->{style} . '"';
+		$portion_to_sign .= ' style="' . $args->{style} . '"';
 	}
 
-	$img . '/>';
+    my $sign = '';
+    if ($crypto_key) {
+        $sign = '&signature=' . hmac_sha1($crypto_key, $portion_to_sign);
+    }
+
+    qq{<img src="$protocol://maps.google.com$portion_to_sign$sign" />};
 }
 
 sub _hdlr_locator_google_map {
@@ -260,17 +338,17 @@ sub _hdlr_locator_google_map {
 		}
 	}
 
-	my $map_control = 'GLargeMapControl';
-	if (defined($args->{'map_control'})) {
-		$map_control = $args->{'map_control'};
-	}
-	&$ctx_set_var('LocatorMapControl', $map_control);
+    &$ctx_set_var('LocatorMapTypeControl', defined($args->{map_type_control}) ? $args->{map_type_control} : 'true');
+    &$ctx_set_var('LocatorPanControl', defined($args->{pan_control}) ? $args->{pan_control} : 'true');
+    &$ctx_set_var('LocatorZoomControl', defined($args->{zoom_control}) ? $args->{zoom_control} : 'true');
+    &$ctx_set_var('LocatorScaleControl', defined($args->{scale_control}) ? $args->{scale_control} : 'true');
+    &$ctx_set_var('LocatorStreetViewControl', defined($args->{street_view_control}) ? $args->{street_view_control} : 'true');
 
 	&$ctx_set_var('LocatorMapID', $args->{id} || 'locator_map');
 	&$ctx_set_var('LocatorMapClass', $args->{class} || '');
 	&$ctx_set_var('LocatorMapStyle', $args->{style} || '');
 
-	my $width = $args->{width} || '400';
+	my $width = $args->{width} || '400px';
 	$width =~ s/(\d)$/$1px/;
 
 	my $height = $args->{height} || '400px';
@@ -297,7 +375,17 @@ sub _hdlr_locator_google_map {
 
 	$ctx->stash('locator_zoom', undef);
 
-	$builder->build($ctx, $tmpl_token) or $ctx->error($builder->errstr);
+    my $result = do {
+        if ( defined( $args->{load_script} ) ) {
+            local $ctx->{__stash}{vars}{locator_script_loaded}
+                = !$args->{load_script};
+        }
+	    $builder->build($ctx, $tmpl_token) or $ctx->error($builder->errstr);
+    };
+
+    $ctx->{__stash}{vars}{locator_script_loaded} = 1;
+
+    $result;
 }
 
 sub _hdlr_locator_has_map {
@@ -318,6 +406,11 @@ sub _hdlr_locator_has_map {
 	}
 
 	return 1;
+}
+
+sub _hdlr_locator_is_premier {
+    my ($plugin, $ctx, $args, $cond) = @_;
+    MT->config->LocatorIsPremier;
 }
 
 sub _hdlr_locator_latitude_g {

@@ -33,10 +33,46 @@ package Locator::App;
 use strict;
 use File::Basename;
 
+sub cms_pre_preview {
+	my ($plugin, $cb, $app, $entry, $data) = @_;
+	&save_data($plugin, $cb, $entry);
+	for my $c (qw(address latitude_g longitude_g zoom_g)) {
+        $app->param($c, $entry->$c);
+    }
+}
+
+sub cms_save_filter {
+	my ($plugin, $enable_target, $cb, $app) = @_;
+
+	return if !($app->param('locator_beacon'));
+
+	my $blog_id = $app->param('blog_id');
+	my $scope = $blog_id ? ('blog:' . $blog_id) : 'system';
+	my $enabled = $plugin->get_config_value(
+		'enable_for_' . $enable_target, $scope
+	);
+	if (! $enabled) {
+		return 1;
+	}
+
+	my $field_address = $plugin->get_config_value('field_address');
+	my $field_map = $plugin->get_config_value('field_map');
+
+	if (($field_address >= 2) && (! $app->param('location_address'))) {
+        return $cb->error($plugin->translate('Please ensure address fields have been filled in.'));
+	}
+	if (($field_map >= 2) && ((! $app->param('location_latitude_g')) || ! $app->param('location_longitude_g'))) {
+        return $cb->error($plugin->translate('Please ensure map fields have been filled in.'));
+	}
+
+    return 1;
+}
+
 sub pre_save{
 	my ($plugin, $cb, $obj, $original) = @_;
 	my $app = MT->instance;
 	my $datasource = $obj->datasource;
+    my $enable_target = $datasource;
 
 	return if !($app->can('param')); # God knows where we'll be coming from!
 
@@ -44,12 +80,15 @@ sub pre_save{
 
 	my $blog_id = $app->param('blog_id');
 	my $scope = $blog_id ? ('blog:' . $blog_id) : 'system';
-	if ($datasource ne 'entry') {
+	if ($datasource eq 'entry') {
+        $enable_target = $obj->class;
+    }
+    else {
 		$scope = undef;
 	}
 
 	my $enabled = $plugin->get_config_value(
-		'enable_for_' . $datasource, $scope
+		'enable_for_' . $enable_target, $scope
 	);
 	if (! $enabled) {
 		return;
@@ -100,9 +139,13 @@ sub save_data {
 	my $q = $app->{query};
 	my $blog_id = $q->param('blog_id');
 	my $datasource = $obj->datasource;
+    my $enable_target = $datasource;
 
 	my $scope = $blog_id ? ('blog:' . $blog_id) : 'system';
-	if ($datasource ne 'entry') {
+	if ($datasource eq 'entry') {
+        $enable_target = $obj->class;
+    }
+    else {
 		$scope = undef;
 	}
 
@@ -117,11 +160,16 @@ sub save_data {
 				$plugin->get_config_value('enable_for_entry', 'system'),
 				'blog:' . $obj->id
 			);
+			$plugin->set_config_value(
+				'enable_for_page',
+				$plugin->get_config_value('enable_for_page', 'system'),
+				'blog:' . $obj->id
+			);
 		}
 	}
 
 	my $enabled = $plugin->get_config_value(
-		'enable_for_' . $datasource, $scope
+		'enable_for_' . $enable_target, $scope
 	);
 	if (! $enabled) {
 		return;
@@ -194,8 +242,8 @@ sub _field_loop_param {
 		);
 		my $found = 0;
 		foreach my $key (keys %cols) {
-			$found = $found || $param->{$key} || '';
-			$param->{'location_' . $key} = $param->{$key} || $cols{$key};
+			$found = $found || $param->{$key} || $q->param('location_' . $key) || '';
+			$param->{'location_' . $key} = $param->{$key} || $q->param('location_' . $key) || $cols{$key};
 		}
 		return if $found;
 	}
@@ -215,9 +263,10 @@ sub _field_loop_param {
 	foreach my $key ('address', 'latitude_g', 'longitude_g', 'zoom_g') {
 		$param->{'location_' . $key} = $data ? $data->$key : '';
 	}
-	$param->{'location_google_map_api_key'} = $plugin->get_config_value(
-		'googlemap_api_key'
-	);
+
+    foreach my $k (qw(show_latlng)) {
+        $param->{ 'location_' . $k } = $plugin->get_config_value($k);
+    }
 }
 
 sub _edit_map_author_tmpl {
@@ -257,7 +306,7 @@ sub _edit_entry {
 	my ($old, $new);
 
 	my $enabled = $plugin->get_config_value(
-		'enable_for_entry', 'blog:' . $blog_id
+		'enable_for_' . ($app->param('_type') || 'entry'), 'blog:' . $blog_id
 	);
 	if (! $enabled) {
 		return;
@@ -298,7 +347,7 @@ sub _edit_entry {
 
 sub _edit_author {
 	my ($plugin, $cb, $app, $tmpl) = @_;
-	my ($old, $old2, $new);
+	my ($old, $old2, $old3, $new);
 
 	my $enabled = $plugin->get_config_value('enable_for_author');
 	if (! $enabled) {
@@ -310,11 +359,12 @@ sub _edit_author {
 	my $edit_map_tmpl = &_edit_map_author_tmpl($plugin);
 	
 	$old = '<fieldset>[\s\n]*<h3><__trans phrase="Preferences"></h3>';
-	$old2 = '<h3><__trans phrase="New User Defaults"></h3>';
+	$old2 = '<h2><__trans phrase="Preferences"></h2>';
+	$old3 = '<h3><__trans phrase="New User Defaults"></h3>';
 #	$old = quotemeta($old);
 	$new = $plugin->load_tmpl_translated($edit_map_tmpl);
 
-	$$tmpl =~ s/($old|$old2)/$new\n$1\n/;
+	$$tmpl =~ s/($old|$old2|$old3)/$new\n$1\n/;
 }
 
 1;

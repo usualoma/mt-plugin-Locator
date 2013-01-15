@@ -46,6 +46,9 @@ use vars qw( %Lexicon );
 	'locator-field address' => '住所',
 	'locator-field map' => '地図',
 	'locator-field zoom' => 'ズーム',
+    'locator-show latlng' => '緯度と経度',
+    'Latitude' => '緯度',
+    'Longitude' => '経度',
 
 	'locator-field not to use' => '使わない',
 	'locator-field use' => '使う',
@@ -56,10 +59,15 @@ use vars qw( %Lexicon );
 	'for author' => 'ユーザー',
 	'for blog' => 'ブログ',
 	'for entry' => 'エントリー',
-	'Which blogs' => 'エントリーへの関連付けを有効にするブログ',
-	'GoogleMap API key' => 'GoogleMapのAPIキー',
+	'for page' => 'ウェブページ',
+	'Which blogs for entry' => 'エントリーへの関連付けを有効にするブログ',
+	'Which blogs for page' => 'ウェブページへの関連付けを有効にするブログ',
+	'GoogleMap Client ID' => 'Premier の Client ID',
+	'GoogleMap Crypto key' => 'Premier の Crypto key',
 
-	'API key(When this blog has specific key)' => 'API key<br/>(このブログが独自にAPIキーを必要とする場合)',
+	'Client ID(When this blog has specific ID)' => 'Client ID<br/>(このブログが独自に Client ID 必要とする場合)',
+	'Crypto key(When this blog has specific key)' => 'Crypto key<br/>(このブログが独自に Crypto key を必要とする場合)',
+
 	'Map' => '地図',
 	'Address' => '住所',
 

@@ -8,7 +8,7 @@ function smarty_function_MTLocatorAddress($args, &$ctx) {
 	if ($addr = $ctx->stash('locator_address')) {
 		return $addr;
 	}
-	else if ($addr = $loc['location_address']) {
+	else if ($addr = $loc->address) {
 		return $addr;
 	}
 	else {

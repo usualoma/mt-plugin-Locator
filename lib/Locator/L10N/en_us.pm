@@ -39,6 +39,7 @@ use vars qw( %Lexicon );
 	'Location default latitude' => '37.778773',
 	'Location default longitude' => '-122.397711',
 	'Location default zoomlevel' => '10',
+    'locator-show latlng' => 'Use the latitude and longitude field',
 );
 
 1;

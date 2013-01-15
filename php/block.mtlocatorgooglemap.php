@@ -1,17 +1,28 @@
 <?php
 function smarty_block_MTLocatorGoogleMap($args, $content, &$ctx, &$repeat) {
 	$localvars = array('locator_google_map_of');
+	$localvarvars = array('locator_script_loaded');
 	if (! isset($content)) {
-		$ctx->localize($localvars);
+		$ctx->localize($localvars, $localvarvars);
+
+        if (isset($args['load_script'])) {
+            $ctx->__stash['vars']['locator_script_loaded'] = $args['load_script'];
+        }
+
 		if ($args['of']) {
 			$ctx->__stash['locator_google_map_of'] = $args['of'];
 		}
 
-		$map_control = 'GLargeMapControl';
-		if (isset($args['map_control'])) {
-			$map_control = $args['map_control'];
-		}
-		$ctx->__stash['vars']['LocatorMapControl'] = $map_control;
+        $ctx->__stash['vars']['LocatorMapTypeControl'] =
+            isset($args['map_type_control']) ? $args['map_type_control'] : 'true';
+        $ctx->__stash['vars']['LocatorPanControl'] =
+            isset($args['pan_control']) ? $args['pan_control'] : 'true';
+        $ctx->__stash['vars']['LocatorZoomControl'] =
+            isset($args['zoom_control']) ? $args['zoom_control'] : 'true';
+        $ctx->__stash['vars']['LocatorScaleControl'] =
+            isset($args['scale_control']) ? $args['scale_control'] : 'true';
+        $ctx->__stash['vars']['LocatorStreetViewControl'] =
+            isset($args['street_view_control']) ? $args['street_view_control'] : 'true';
 
 		$ctx->__stash['vars']['LocatorMapID'] =
 			isset($args['id']) ? $args['id'] : 'locator_map';
@@ -58,14 +69,16 @@ function smarty_block_MTLocatorGoogleMap($args, $content, &$ctx, &$repeat) {
 	$loc = locator_detect_location($args, $ctx);
 	if (
 		empty($loc)
-		|| empty($loc['location_latitude_g'])
-		|| empty($loc['location_longitude_g'])
+		|| ! $loc->latitude_g
+		|| ! $loc->longitude_g
 	) {
 		return '';
 	}
 
-	if (!$repeat)
-		$ctx->restore($localvars);
+	if (!$repeat) {
+		$ctx->restore($localvars, $localvarvars);
+        $ctx->__stash['vars']['locator_script_loaded'] = 1;
+    }
 
 	return $content;
 }

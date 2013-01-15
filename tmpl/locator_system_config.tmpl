@@ -61,6 +61,22 @@
 </ul>
 
 </mtapp:setting>
+
+<mtapp:setting
+	id="locator_show_latlng"
+	label="<__trans phrase="locator-show latlng">"
+>
+<ul>
+<li>
+<input type="radio" name="show_latlng" value="0" <MTUnless tag="show_latlng">checked="checked"</MTUnless> /> <MT_TRANS phrase="locator-field not to use">
+</li>
+
+<li>
+<input type="radio" name="show_latlng" value="1" <MTIf name="show_latlng">checked="checked"</MTIf> /> <MT_TRANS phrase="locator-field use">
+</li>
+</ul>
+</mtapp:setting>
+
 </div>
 
 <mtapp:setting
@@ -70,28 +86,46 @@
 
 <ul>
 <li>
-<input type="checkbox" name="enable_for_author" id="enable_for_author" value="1" <MTIfNonZero tag="LocatorEnableForAuthor">checked="checked"</MTIfNonZero> /> <MT_TRANS phrase="for author">
+<label><input type="checkbox" name="enable_for_author" id="enable_for_author" value="1" <MTIfNonZero tag="LocatorEnableForAuthor">checked="checked"</MTIfNonZero> /> <MT_TRANS phrase="for author"></label>
 </li>
 
 <li>
-<input type="checkbox" name="enable_for_blog" id="enable_for_blog" value="1" <MTIfNonZero tag="LocatorEnableForBlog">checked="checked"</MTIfNonZero> /> <MT_TRANS phrase="for blog">
+<label><input type="checkbox" name="enable_for_blog" id="enable_for_blog" value="1" <MTIfNonZero tag="LocatorEnableForBlog">checked="checked"</MTIfNonZero> /> <MT_TRANS phrase="for blog"></label>
 </li>
 
 <li>
-<input type="checkbox" name="enable_for_entry" id="enable_for_entry" value="1" <MTIfNonZero tag="LocatorEnableForEntry">checked="checked"</MTIfNonZero> onclick="toggleAdvancedPrefs(event, 'enable_for_entry');" /> <MT_TRANS phrase="for entry">
+<label><input type="checkbox" name="enable_for_page" id="enable_for_page" value="1" <MTIfNonZero tag="LocatorEnableForEntry">checked="checked"</MTIfNonZero> onclick="toggleAdvancedPrefs(event, 'enable_for_page');" /> <MT_TRANS phrase="for page"></label>
+</li>
+
+<li>
+<label><input type="checkbox" name="enable_for_entry" id="enable_for_entry" value="1" <MTIfNonZero tag="LocatorEnableForEntry">checked="checked"</MTIfNonZero> onclick="toggleAdvancedPrefs(event, 'enable_for_entry');" /> <MT_TRANS phrase="for entry"></label>
 </li>
 
 </ul>
 
 </mtapp:setting>
 
+<div id="enable_for_page-advanced" class="setting-advanced" style="display: <TMPL_IF NAME=ENABLE_FOR_ENTRY>block<TMPL_ELSE>none</TMPL_IF>;">
+<mtapp:setting
+	id="blogs-for-page"
+	label="<__trans phrase="Which blogs for page">"
+>
+<MTWebsites ids="all">
+<label><input type="checkbox" value="1" name="enable_for_page_<MTBlogID/>" <MTIfNonZero tag="LocatorEnableForPage">checked="checked"</MTIfNonZero>/> <MTBlogName/></label><br/>
+<MTBlogs include_blogs="children">
+<label><input type="checkbox" value="1" name="enable_for_page_<MTBlogID/>" <MTIfNonZero tag="LocatorEnableForPage">checked="checked"</MTIfNonZero>/> <MTBlogName/></label><br/>
+</MTBlogs>
+</MTWebsites>
+</mtapp:setting>
+</div>
+
 <div id="enable_for_entry-advanced" class="setting-advanced" style="display: <TMPL_IF NAME=ENABLE_FOR_ENTRY>block<TMPL_ELSE>none</TMPL_IF>;">
 <mtapp:setting
 	id="blogs"
-	label="<__trans phrase="Which blogs">"
+	label="<__trans phrase="Which blogs for entry">"
 >
-<MTBlogs ids="all">
-<input type="checkbox" value="1" name="enable_for_entry_<MTBlogID/>" <MTIfNonZero tag="LocatorEnableForEntry">checked="checked"</MTIfNonZero>/><MTBlogName/><br/>
+<MTBlogs blog_ids="all">
+<label><input type="checkbox" value="1" name="enable_for_entry_<MTBlogID/>" <MTIfNonZero tag="LocatorEnableForEntry">checked="checked"</MTIfNonZero>/> <MTBlogName/></label><br/>
 </MTBlogs>
 </mtapp:setting>
 </div>
@@ -112,10 +146,18 @@
 
 </mtapp:setting>
 
+<mt:LocatorIsPremier>
+<mtapp:setting
+	id="client_id"
+	label="<__trans phrase="GoogleMap Client ID">"
+>
+<input name="googlemap_api_key" <TMPL_IF NAME=GOOGLEMAP_CLIENT_ID>value="<TMPL_VAR NAME=GOOGLEMAP_CLIENT_ID ESCAPE=HTML>"</TMPL_IF>/>
+</mtapp:setting>
 
 <mtapp:setting
-	id="apikey"
-	label="<__trans phrase="API key">"
+	id="crypto_key"
+	label="<__trans phrase="GoogleMap Crypto key">"
 >
-<input name="googlemap_api_key" <TMPL_IF NAME=GOOGLEMAP_API_KEY>value="<TMPL_VAR NAME=GOOGLEMAP_API_KEY ESCAPE=HTML>"</TMPL_IF>/>
+<input name="googlemap_api_key" <TMPL_IF NAME=GOOGLEMAP_CRYPTO_KEY>value="<TMPL_VAR NAME=GOOGLEMAP_CRYPTO_KEY ESCAPE=HTML>"</TMPL_IF>/>
 </mtapp:setting>
+</mt:LocatorIsPremier>

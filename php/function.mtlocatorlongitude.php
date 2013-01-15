@@ -8,7 +8,7 @@ function smarty_function_MTLocatorLongitude($args, &$ctx) {
 	if ($value = $ctx->stash('locator_longitude')) {
 		return $value;
 	}
-	else if ($value = $loc['location_longitude_g']) {
+	else if ($value = $loc->longitude_g) {
 		return $value;
 	}
 	else {

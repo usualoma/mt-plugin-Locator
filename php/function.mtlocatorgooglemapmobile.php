@@ -3,21 +3,27 @@ function smarty_function_MTLocatorGoogleMapMobile($args, &$ctx) {
 	$loc = locator_detect_location($args, $ctx);
 	if (
 		empty($loc)
-		|| empty($loc['location_latitude_g'])
-		|| empty($loc['location_longitude_g'])
+		|| ! $loc->latitude_g
+		|| ! $loc->longitude_g
 	) {
 		return '';
 	}
 
-	$lat = $loc['location_latitude_g'];
-	$lng = $loc['location_longitude_g'];
+	$lat = $loc->latitude_g;
+	$lng = $loc->longitude_g;
 
     $blog_id = $ctx->stash('blog_id');
-	$key = locator_fetch_plugin_config_value(
-		'googlemap_api_key', 'blog:' . $blog_id
+	$client_id = locator_fetch_plugin_config_value(
+		'googlemap_client_id', 'blog:' . $blog_id
 	);
-	if (! $key) {
-		$key = locator_fetch_plugin_config_value('googlemap_api_key');
+	if (! $client_id) {
+		$client_id = locator_fetch_plugin_config_value('googlemap_client_id');
+	}
+	$crypto_key = locator_fetch_plugin_config_value(
+		'googlemap_crypto_key', 'blog:' . $blog_id
+	);
+	if (! $crypto_key) {
+		$crypto_key = locator_fetch_plugin_config_value('googlemap_crypto_key');
 	}
 
 	$zoom = isset($args['zoom']) ? $args['zoom'] : '';
@@ -25,7 +31,7 @@ function smarty_function_MTLocatorGoogleMapMobile($args, &$ctx) {
 		$zoom = $ctx->stash('locator_zoom');
 	}
 	if (! $zoom) {
-		$zoom = $loc['location_zoom_g'];
+		$zoom = $loc->zoom_g;
 	}
 	if (! $zoom) {
 		$zoom = 10;
@@ -34,26 +40,35 @@ function smarty_function_MTLocatorGoogleMapMobile($args, &$ctx) {
 	$width = isset($args['width']) ? $args['width'] : '200';
 	$height = isset($args['height']) ? $args['height'] : '200';
 
-	$img = '<img src="' .
-	'http://maps.google.com/staticmap?center=' . $lat . ',' . $lng .
-	'&zoom=' . $zoom .
-    '&size=' . $width . 'x' . $height .
-    '&maptype=mobile' .
-    '&key=' . $key .
-	'"';
+    $maptype = isset($args['maptype']) ? $args['maptype'] : 'roadmap';
+    $protocol = isset($args['protocol']) ? $args['protocol'] : 'http';
+
+    $portion_to_sign =
+        '/maps/api/staticmap?' .
+        'sensor=false' .
+        ($client_id ? ('&client=' . $client_id) : '') .
+        '&center=' . $lat . ',' . $lng .
+        '&zoom=' . $zoom .
+        '&size=' . $width . 'x' . $height .
+        '&maptype=' . $maptype .
+        '&markers=' . $lat . ',' . $lng;
 
 	if ($args['id']) {
-		$img .= ' id="' . $args['id'] . '"';
+		$portion_to_sign .= ' id="' . $args['id'] . '"';
 	}
 	if ($args['class']) {
-		$img .= ' class="' . $args['class'] . '"';
+		$portion_to_sign .= ' class="' . $args['class'] . '"';
 	}
 	if ($args['style']) {
-		$img .= ' style="' . $args['style'] . '"';
+		$portion_to_sign .= ' style="' . $args['style'] . '"';
 	}
 
-	$img .= '/>';
+    $sign = '';
+    if ($crypto_key) {
+        $sign = '&signature=' . hash_hmac('sha1', $portion_to_sign, $crypto_key);
+    }
 
-	return $img;
+    return '<img src="' . $protocol . '://maps.google.com' .
+        $portion_to_sign . $sign . '" />';
 }
 ?>

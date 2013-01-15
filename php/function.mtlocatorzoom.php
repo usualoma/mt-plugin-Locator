@@ -5,13 +5,13 @@ function smarty_function_MTLocatorZoom($args, &$ctx) {
 		return '';
 	}
 
-	if ((! $ctx->stash('locator_longitude')) && (! $loc['location_longitude_g'])) {
+	if ((! $ctx->stash('locator_longitude')) && (! $loc->longitude_g)) {
 		return '';
 	}
 	else if ($value = $ctx->stash('locator_zoom')) {
 		return $value;
 	}
-	else if ($value = $loc['location_zoom_g']) {
+	else if ($value = $loc->zoom_g) {
 		return $value;
 	}
 	else {
