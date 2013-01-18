@@ -94,7 +94,7 @@
 </li>
 
 <li>
-<label><input type="checkbox" name="enable_for_page" id="enable_for_page" value="1" <MTIfNonZero tag="LocatorEnableForEntry">checked="checked"</MTIfNonZero> onclick="toggleAdvancedPrefs(event, 'enable_for_page');" /> <MT_TRANS phrase="for page"></label>
+<label><input type="checkbox" name="enable_for_page" id="enable_for_page" value="1" <MTIfNonZero tag="LocatorEnableForPage">checked="checked"</MTIfNonZero> onclick="toggleAdvancedPrefs(event, 'enable_for_page');" /> <MT_TRANS phrase="for page"></label>
 </li>
 
 <li>
@@ -105,7 +105,7 @@
 
 </mtapp:setting>
 
-<div id="enable_for_page-advanced" class="setting-advanced" style="display: <TMPL_IF NAME=ENABLE_FOR_ENTRY>block<TMPL_ELSE>none</TMPL_IF>;">
+<div id="enable_for_page-advanced" class="setting-advanced" style="display: <TMPL_IF NAME=ENABLE_FOR_PAGE>block<TMPL_ELSE>none</TMPL_IF>;">
 <mtapp:setting
 	id="blogs-for-page"
 	label="<__trans phrase="Which blogs for page">"
