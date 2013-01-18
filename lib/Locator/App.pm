@@ -44,7 +44,7 @@ sub cms_pre_preview {
 sub cms_save_filter {
 	my ($plugin, $enable_target, $cb, $app) = @_;
 
-	return if !($app->param('locator_beacon'));
+	return 1 if !($app->param('locator_beacon'));
 
 	my $blog_id = $app->param('blog_id');
 	my $scope = $blog_id ? ('blog:' . $blog_id) : 'system';
