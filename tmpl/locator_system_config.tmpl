@@ -68,11 +68,26 @@
 >
 <ul>
 <li>
-<input type="radio" name="show_latlng" value="0" <MTUnless tag="show_latlng">checked="checked"</MTUnless> /> <MT_TRANS phrase="locator-field not to use">
+<input type="radio" name="show_latlng" value="0" <MTUnless tag="show_latlng">checked="checked"</MTUnless> /> <MT_TRANS phrase="locator-field not to show">
 </li>
 
 <li>
-<input type="radio" name="show_latlng" value="1" <MTIf name="show_latlng">checked="checked"</MTIf> /> <MT_TRANS phrase="locator-field use">
+<input type="radio" name="show_latlng" value="1" <MTIf name="show_latlng">checked="checked"</MTIf> /> <MT_TRANS phrase="locator-field show">
+</li>
+</ul>
+</mtapp:setting>
+
+<mtapp:setting
+	id="locator_show_zoom"
+	label="<__trans phrase="locator-show zoom">"
+>
+<ul>
+<li>
+<input type="radio" name="show_zoom" value="0" <MTUnless tag="show_zoom">checked="checked"</MTUnless> /> <MT_TRANS phrase="locator-field not to show">
+</li>
+
+<li>
+<input type="radio" name="show_zoom" value="1" <MTIf name="show_zoom">checked="checked"</MTIf> /> <MT_TRANS phrase="locator-field show">
 </li>
 </ul>
 </mtapp:setting>

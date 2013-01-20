@@ -37,7 +37,7 @@ use 5.006;    # requires Perl 5.6.x
 use MT 3.3;   # requires MT 3.3 or later
 
 use base 'MT::Plugin';
-our $VERSION = '1.0.1';
+our $VERSION = '1.0.2';
 our $SCHEMA_VERSION = '0.72';
 
 my $plugin;
@@ -57,6 +57,7 @@ MT->add_plugin($plugin = __PACKAGE__->new({
 		['field_map', {Default => 2}],
 		['field_zoom', {Default => 1}],
 		['show_latlng', {Default => 0}],
+		['show_zoom', {Default => 0}],
 
 		['enable_for_author', {Default => 1}],
 		['enable_for_blog', {Default => 1}],

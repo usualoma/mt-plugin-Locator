@@ -48,7 +48,9 @@
 <div style="<mt:Unless name="location_show_latlng">display: none; </mt:Unless>">
 <label for="location_longitude_g" style="display: inline-block; min-width: 50px"><__trans phrase="Longitude"></label><input name="location_longitude_g" id="location_longitude_g" value="<mt:var name="location_longitude_g">" />
 </div>
-<input name="location_zoom_g" type="hidden" id="location_zoom_g" value="<mt:var name="location_zoom_g">" />
+<div style="<mt:Unless name="location_show_zoom">display: none; </mt:Unless>padding: 5px 0 3px 0">
+<label for="location_zoom_g" style="display: inline-block; min-width: 50px"><__trans phrase="Zoom"></label><input name="location_zoom_g" id="location_zoom_g" value="<mt:var name="location_zoom_g">" />
+</div>
 
 <script src="http://maps.google.com/maps/api/js?v=3<mt:If tag="GoogleMapClientID">&client=<mt:GoogleMapClientID /></mt:If>&sensor=false" type="text/javascript"></script>
 
@@ -280,6 +282,10 @@ jQuery(function() {
         if (lat && lng) {
 	        updateLocationPoint(new google.maps.LatLng(lat, lng));
         }
+    });
+
+    jQuery('#location_zoom_g').change(function() {
+        map.setZoom(parseInt(jQuery('#location_zoom_g').val()));
     });
 });
 </script>

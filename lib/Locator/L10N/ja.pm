@@ -47,11 +47,14 @@ use vars qw( %Lexicon );
 	'locator-field map' => '地図',
 	'locator-field zoom' => 'ズーム',
     'locator-show latlng' => '緯度と経度',
+    'locator-show zoom' => 'ズーム',
     'Latitude' => '緯度',
     'Longitude' => '経度',
 
 	'locator-field not to use' => '使わない',
 	'locator-field use' => '使う',
+	'locator-field not to show' => '表示しない',
+	'locator-field show' => '表示する',
 	'locator-field any' => '任意で設定可能',
 	'locator-field required' => '必須項目',
 
@@ -70,10 +73,11 @@ use vars qw( %Lexicon );
 
 	'Map' => '地図',
 	'Address' => '住所',
+	'Zoom' => 'ズーム',
 
 	'Location default latitude' => '35.674311',
 	'Location default longitude' => '136.862834',
-	'Location default zoomlevel' => '10',
+	'Location default zoomlevel' => '17',
 	
 	'Please ensure address fields have been filled in.' => '住所は必須項目です',
 	'Please ensure map fields have been filled in.' => '地図は必須項目です',

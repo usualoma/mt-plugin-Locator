@@ -229,6 +229,12 @@ sub _field_loop_param {
 	my $id = $q->param('id') || ($datasource eq 'author' ? $q->param('author_id') : '');
 	my $perms = $app->{perms};
 
+
+    foreach my $k (qw(show_latlng show_zoom)) {
+        $param->{ 'location_' . $k } = $plugin->get_config_value($k);
+    }
+
+
 	if ($datasource eq 'page') {
 		$datasource = 'entry';
 	}
@@ -238,7 +244,7 @@ sub _field_loop_param {
 			address => '',
 			latitude_g => '',
 			longitude_g => '',
-			zoom_g => 10
+			zoom_g => $plugin->translate('Location default zoomlevel'),
 		);
 		my $found = 0;
 		foreach my $key (keys %cols) {
@@ -263,10 +269,6 @@ sub _field_loop_param {
 	foreach my $key ('address', 'latitude_g', 'longitude_g', 'zoom_g') {
 		$param->{'location_' . $key} = $data ? $data->$key : '';
 	}
-
-    foreach my $k (qw(show_latlng)) {
-        $param->{ 'location_' . $k } = $plugin->get_config_value($k);
-    }
 }
 
 sub _edit_map_author_tmpl {
