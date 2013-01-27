@@ -41,6 +41,23 @@ sub cms_pre_preview {
     }
 }
 
+sub cms_pre_save {
+	my ($plugin, $enable_target, $cb, $app, $obj, $orig_obj) = @_;
+
+	my $blog_id = $app->param('blog_id');
+	my $scope = $blog_id ? ('blog:' . $blog_id) : 'system';
+	my $enabled = $plugin->get_config_value(
+		'enable_for_' . $enable_target, $scope
+	);
+	if (! $enabled) {
+		return 1;
+	}
+
+	&save_data($plugin, $cb, $obj);
+
+	return 1;
+}
+
 sub cms_save_filter {
 	my ($plugin, $enable_target, $cb, $app) = @_;
 

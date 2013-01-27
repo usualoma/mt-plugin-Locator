@@ -85,6 +85,13 @@ MT->add_plugin($plugin = __PACKAGE__->new({
         'MT::App::CMS::cms_pre_preview' => sub { runner('cms_pre_preview', 'app', @_); },
         (   map {
                 my $type = $_;
+                (   "MT::App::CMS::cms_pre_save.$type" =>
+                        sub { runner( 'cms_pre_save', 'app', $type, @_ ); }
+                    )
+                } qw(entry page)
+            ),
+        (   map {
+                my $type = $_;
                 (   "MT::App::CMS::cms_save_filter.$type" =>
                         sub { runner( 'cms_save_filter', 'app', $type, @_ ); }
                     )
