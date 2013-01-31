@@ -79,7 +79,7 @@ sub _hdlr_config_key {
     my ($key, $plugin, $ctx, $args) = @_;
 
 	my $hash = $plugin->get_config_hash();
-	my $key = $hash->{$key};
+	$key = $hash->{$key};
 
 	if (
 		$ctx->{current_archive_type} ||
@@ -300,7 +300,10 @@ sub _hdlr_locator_google_map_mobile {
 
     my $sign = '';
     if ($crypto_key) {
-        $sign = '&signature=' . hmac_sha1($crypto_key, $portion_to_sign);
+        require MIME::Base64;
+        $sign = '&signature='
+            . hmac_sha1( MIME::Base64::decode_base64($crypto_key),
+            $portion_to_sign );
     }
 
     qq{<img src="$protocol://maps.google.com$portion_to_sign$sign" />};
@@ -348,10 +351,10 @@ sub _hdlr_locator_google_map {
 	&$ctx_set_var('LocatorMapClass', $args->{class} || '');
 	&$ctx_set_var('LocatorMapStyle', $args->{style} || '');
 
-	my $width = $args->{width} || '400px';
+	my $width = defined($args->{width}) ?  $args->{width} : '400px';
 	$width =~ s/(\d)$/$1px/;
 
-	my $height = $args->{height} || '400px';
+	my $height = defined($args->{height}) ? $args->{height} : '400px';
 	$height =~ s/(\d)$/$1px/;
 
 	&$ctx_set_var('LocatorMapWidth', $width);

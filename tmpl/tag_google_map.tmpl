@@ -1,7 +1,7 @@
 <div
 	id="<$MTGetVar name="LocatorMapID"$>"
 	class="<$MTGetVar name="LocatorMapClass"$>"
-	style="width: <$MTGetVar name="LocatorMapWidth"$>; height: <$MTGetVar name="LocatorMapHeight"$>;<$MTGetVar name="LocatorMapStyle"$>"
+	style="<mt:If name="LocatorMapWidth">width: <$MTGetVar name="LocatorMapWidth"$>;</mt:If><mt:If name="LocatorMapHeight">height: <$MTGetVar name="LocatorMapHeight"$>;</mt:If><$MTGetVar name="LocatorMapStyle"$>"
 ></div>
 
 <MTUnless name="locator_script_loaded">
