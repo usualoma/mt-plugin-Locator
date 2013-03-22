@@ -346,6 +346,7 @@ sub _hdlr_locator_google_map {
     &$ctx_set_var('LocatorZoomControl', defined($args->{zoom_control}) ? $args->{zoom_control} : 'true');
     &$ctx_set_var('LocatorScaleControl', defined($args->{scale_control}) ? $args->{scale_control} : 'true');
     &$ctx_set_var('LocatorStreetViewControl', defined($args->{street_view_control}) ? $args->{street_view_control} : 'true');
+    &$ctx_set_var('LocatorOpenInfoWindow', defined($args->{open_info_window}) ? $args->{open_info_window} : 'true');
 
 	&$ctx_set_var('LocatorMapID', $args->{id} || 'locator_map');
 	&$ctx_set_var('LocatorMapClass', $args->{class} || '');

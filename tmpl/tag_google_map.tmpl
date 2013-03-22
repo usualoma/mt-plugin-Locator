@@ -48,7 +48,9 @@
         }
         info_window.open(map, marker);
     }
+    <MTIf name="LocatorOpenInfoWindow">
     open_info_window();
+    </MTIf>
 
 	google.maps.event.addListener(marker, 'click', function() {
 		if (info_window) {
