@@ -462,4 +462,46 @@ sub _hdlr_locator_address {
 	return $ctx->stash('locator_address') || $loc->address || '';
 }
 
+sub _hdlr_locator_nearest_entries {
+    my ( $plugin, $ctx, $args, $cond ) = @_;
+
+    my $loc = &__detect_location(@_);
+    if ( !$loc ) {
+        return '';
+    }
+
+    my $lat = $ctx->stash('locator_latitude') || $loc->latitude_g
+        or return '';
+    my $lng = $ctx->stash('locator_longitude') || $loc->longitude_g
+        or return '';
+    my $distance = $args->{distance} || 10;
+    my $limit    = $args->{nearestn} || 10;
+    my $blog     = $ctx->stash('blog');
+
+    return unless $lat =~ /^[\d\.]+$/ && $lng =~ /^[\d\.]+$/;
+
+    my $condition
+        = "SQRT(POWER(('$lat' - mt_entry.entry_latitude_g) / 0.0111, 2) + POWER(('$lng' - mt_entry.entry_longitude_g) / 0.0091, 2))";
+    my @entries = MT->model('entry')->load(
+        [   {   blog_id        => $blog->id,
+                "!$condition!" => { op => '<=', value => $distance },
+                (   $loc->isa('MT::Entry')
+                    ? ( id => { not => $loc->id } )
+                    : ()
+                )
+            }
+        ],
+        {   limit => $limit,
+            sort  => "!$condition!",
+        }
+    );
+
+    return '' unless @entries;
+
+    local $ctx->{__stash}{entries} = \@entries;
+    local $ctx->{archive_type};
+    my $handler = $ctx->handler_for('entries');
+    $handler->invoke( $ctx, $args, $cond ) or return '';
+}
+
 1;

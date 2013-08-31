@@ -37,7 +37,7 @@ use 5.006;    # requires Perl 5.6.x
 use MT 3.3;   # requires MT 3.3 or later
 
 use base 'MT::Plugin';
-our $VERSION = '1.0.4';
+our $VERSION = '1.0.5';
 our $SCHEMA_VERSION = '0.72';
 
 my $plugin;
@@ -150,6 +150,8 @@ BEGIN {
 		'LocatorHasMap?' => '_hdlr_locator_has_map',
 		'LocatorGoogleMap' => '_hdlr_locator_google_map',
 		'LocatorIsPremier?' => '_hdlr_locator_is_premier',
+
+		'LocatorNearestEntries' => '_hdlr_locator_nearest_entries',
 	};
 }
 
