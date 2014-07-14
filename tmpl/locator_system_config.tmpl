@@ -139,9 +139,12 @@
 	id="blogs"
 	label="<__trans phrase="Which blogs for entry">"
 >
-<MTBlogs blog_ids="all">
+<MTWebsites ids="all">
+<label><input type="checkbox" value="1" name="enable_for_entry_<MTBlogID/>" <MTIfNonZero tag="LocatorEnableForEntry">checked="checked"</MTIfNonZero>/> <MTBlogName/></label><br/>
+<MTBlogs include_blogs="children">
 <label><input type="checkbox" value="1" name="enable_for_entry_<MTBlogID/>" <MTIfNonZero tag="LocatorEnableForEntry">checked="checked"</MTIfNonZero>/> <MTBlogName/></label><br/>
 </MTBlogs>
+</MTWebsites>
 </mtapp:setting>
 </div>
 
