@@ -37,7 +37,7 @@ sub cms_pre_preview {
 	my ($plugin, $cb, $app, $entry, $data) = @_;
 	&save_data($plugin, $cb, $entry);
 	for my $c (qw(address latitude_g longitude_g zoom_g)) {
-        $app->param($c, $entry->$c);
+        $app->param($c, $entry->$c) if $entry->has_column($c);
     }
 }
 

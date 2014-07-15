@@ -37,7 +37,7 @@ use 5.006;    # requires Perl 5.6.x
 use MT 3.3;   # requires MT 3.3 or later
 
 use base 'MT::Plugin';
-our $VERSION = '1.0.6';
+our $VERSION = '1.0.7';
 our $SCHEMA_VERSION = '0.72';
 
 my $plugin;
@@ -306,7 +306,7 @@ sub save_config {
 	}
 	else {
 		require MT::Blog;
-		my @blogs = MT::Blog->load();
+		my @blogs = MT::Blog->load({class => '*'});
 		foreach my $b (@blogs) {
 			my $enable_for_entry;
 			if ($args->{'enable_for_entry_' . $b->id}) {
