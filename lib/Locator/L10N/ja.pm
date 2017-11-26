@@ -65,9 +65,11 @@ use vars qw( %Lexicon );
 	'for page' => 'ウェブページ',
 	'Which blogs for entry' => 'エントリーへの関連付けを有効にするブログ',
 	'Which blogs for page' => 'ウェブページへの関連付けを有効にするブログ',
+	'GoogleMap API key' => 'GoogleMapのAPIキー',
 	'GoogleMap Client ID' => 'Premier の Client ID',
 	'GoogleMap Crypto key' => 'Premier の Crypto key',
 
+	'API key(When this blog has specific key)' => 'API key<br/>(このブログが独自にAPIキーを必要とする場合)',
 	'Client ID(When this blog has specific ID)' => 'Client ID<br/>(このブログが独自に Client ID 必要とする場合)',
 	'Crypto key(When this blog has specific key)' => 'Crypto key<br/>(このブログが独自に Crypto key を必要とする場合)',
 

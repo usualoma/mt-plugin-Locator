@@ -5,13 +5,23 @@
 	id="client_id"
 	label="<__trans phrase="Client ID(When this blog has specific ID)">"
 >
-<input name="googlemap_api_key" <TMPL_IF NAME=GOOGLEMAP_CLIENT_ID>value="<TMPL_VAR NAME=GOOGLEMAP_CLIENT_ID ESCAPE=HTML>"</TMPL_IF>/>
+<input name="googlemap_client_id" <TMPL_IF NAME=GOOGLEMAP_CLIENT_ID>value="<TMPL_VAR NAME=GOOGLEMAP_CLIENT_ID ESCAPE=HTML>"</TMPL_IF>/>
 </mtapp:setting>
 
 <mtapp:setting
 	id="crypto_key"
 	label="<__trans phrase="Crypto key(When this blog has specific key)">"
 >
-<input name="googlemap_api_key" <TMPL_IF NAME=GOOGLEMAP_CRYPTO_KEY>value="<TMPL_VAR NAME=GOOGLEMAP_CRYPTO_KEY ESCAPE=HTML>"</TMPL_IF>/>
+<input name="googlemap_crypto_key" <TMPL_IF NAME=GOOGLEMAP_CRYPTO_KEY>value="<TMPL_VAR NAME=GOOGLEMAP_CRYPTO_KEY ESCAPE=HTML>"</TMPL_IF>/>
 </mtapp:setting>
+
+<mt:Else>
+
+<mtapp:setting
+	id="apikey"
+	label="<__trans phrase="API key(When this blog has specific key)">"
+>
+<input name="googlemap_api_key" <TMPL_IF NAME=GOOGLEMAP_API_KEY>value="<TMPL_VAR NAME=GOOGLEMAP_API_KEY ESCAPE=HTML>"</TMPL_IF>/>
+</mtapp:setting>
+
 </mt:LocatorIsPremier>
